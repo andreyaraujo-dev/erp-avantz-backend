@@ -3,16 +3,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .serializers import AccountSerializer
-from .models import Account
+from .serializers import UsersSerializers
+from .models import Users
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.
     """
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
+    queryset = Users.objects.all()
+    serializer_class = UsersSerializers
     # permission_classes = [IsAccountAdminOrReadOnly]
 
     @action(detail=True, methods=['post'])
