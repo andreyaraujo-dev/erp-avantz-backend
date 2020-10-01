@@ -103,7 +103,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-REFRESH_TOKEN_SECRET = 'mystringwithmysecrettoken'
+REFRESH_TOKEN_SECRET = config('REFRESH_TOKEN_SECRET')
 
 CORS_ALLOW_CREDENTIALS = True  # to accept cookies via ajax request
 CORS_ORIGIN_WHITELIST = [
