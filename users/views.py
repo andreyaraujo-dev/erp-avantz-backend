@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.hashers import check_password
 from rest_framework import exceptions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -26,7 +27,6 @@ def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
     response = Response()
-
     # checks if the username and password have been sent
     if (username is None) or (password is None):
         raise exceptions.AuthenticationFailed(
@@ -35,18 +35,38 @@ def login(request):
     # check if the user was found
     if(user is None):
         raise exceptions.AuthenticationFailed('user not found')
+    print(f'USUÁRIO ENCONTRADO -> {user}')
     # check if the password has been correct
-    if user.password != password:
-        raise exceptions.AuthenticationFailed('wrong password')
+    if user.senha:
+        if password != user.password:
+            raise exceptions.AuthenticationFailed('wrong password')
+    else:
+        match_check = check_password(password, user.password)
+        if not user.check_password(password):
+            raise exceptions.AuthenticationFailed('wrong password')
+            print(f'SENHA INVÁLIDA -> {password}')
+
+    print(f'SENHA VÁLIDA -> {password}')
+
     # check if the user has been active
     if user.ativo == 0:
         raise exceptions.AuthenticationFailed('disabled user')
-    instituicao = Instit.objects.get(pk=user.instit)
+        print(f'USUÁRIO INATIVO -> {user.ativo}')
+    else:
+        print(f'USUÁRIO ATIVO -> {user.ativo}')
+
+    instituicao = Instit.objects.get(pk=user.instit_id)
+    print(f'INSTITUICAO ENCONTRADA -> {instituicao}')
+
     # check if the institution has ben active
     if instituicao.ativo == 0:
         raise exceptions.AuthenticationFailed('disabled institution')
+        print(f'INSTITUICAO INATIVA -> {instituicao.ativo}')
+    else:
+        print(f'INSTITUICAO ATIVA -> {instituicao.ativo}')
 
     serialized_user = UsersSerializers(user).data
+    print(f'USUÁRIO SERIALIZADO -> {serialized_user}')
 
     access_token = generate_access_token(user)
     refresh_token = generate_refresh_token(user)

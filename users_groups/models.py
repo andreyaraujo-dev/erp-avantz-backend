@@ -13,3 +13,6 @@ class UsersGrp(models.Model):
         managed = False
         db_table = 'users_grp'
         unique_together = (('instit', 'grupo'),)
+
+    def __str__(self):
+        return self.grupo

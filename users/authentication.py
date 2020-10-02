@@ -45,7 +45,7 @@ class SafeJWTAuthentication(BaseAuthentication):
         # check if the user has been active
         if user.ativo == 0:
             raise exceptions.AuthenticationFailed('disabled user')
-        instituicao = Instit.objects.get(pk=user.instit)
+        instituicao = Instit.objects.get(pk=user.instit_id)
         # check if the institution has ben active
         if instituicao.ativo == 0:
             raise exceptions.AuthenticationFailed('disabled institution')

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -11,6 +10,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.
     """
+    # User = get_user_model()
     queryset = Users.objects.all()
     serializer_class = UsersSerializers
     # permission_classes = [IsAccountAdminOrReadOnly]

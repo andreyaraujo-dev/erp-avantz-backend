@@ -21,3 +21,6 @@ class Pescod(models.Model):
     class Meta:
         managed = False
         db_table = 'pescod'
+
+    def __str__(self):
+        return self.nomeorrazaosocial

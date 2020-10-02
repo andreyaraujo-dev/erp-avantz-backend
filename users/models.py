@@ -24,9 +24,13 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password, idpescod, instit, ativo, idgrp, acess):
-        user = self.create_user(username, email=email, password=password,
-                                idpescod=idpescod, instit=instit, ativo=ativo, idgrp=idgrp, acess=acess)
+    def create_superuser(self, username, first_name, last_name, email, password, idpescod, instit, ativo, idgrp, acess):
+        id_pescod = Pescod.objects.get(pk=idpescod)
+        id_instit = Instit.objects.get(pk=instit)
+        id_user_group = UsersGrp.objects.get(pk=idgrp)
+
+        user = self.create_user(username, first_name=first_name, last_name=last_name, email=email, password=password,
+                                idpescod=id_pescod, instit=id_instit, ativo=ativo, idgrp=id_user_group, acess=acess)
         user.is_active = True
         user.is_superuser = True
         user.is_staff = True
@@ -36,9 +40,11 @@ class UserManager(BaseUserManager):
 
 class Users(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_('username'), max_length=15, unique=True)
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
-    email = models.EmailField(_('email address'), max_length=255)
+    first_name = models.CharField(
+        _('first name'), max_length=30, blank=False, null=False,)
+    last_name = models.CharField(
+        _('last name'), max_length=30, blank=False, null=True,)
+    email = models.EmailField(_('email address'), max_length=255, blank=False)
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True,
@@ -47,17 +53,17 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_trusty = models.BooleanField(_('trusty'), default=False,
                                     help_text=_('Designates whether this user has confirmed his account.'))
     idpescod = models.ForeignKey(
-        Pescod, on_delete=models.DO_NOTHING, verbose_name='ID registro pessoa')
+        Pescod, on_delete=models.DO_NOTHING, blank=False, verbose_name='registro pessoa')
     instit = models.ForeignKey(
-        Instit, on_delete=models.DO_NOTHING, verbose_name='ID instituição')
-    ativo = models.PositiveIntegerField(blank=True, null=True)
+        Instit, on_delete=models.DO_NOTHING, blank=False, verbose_name='instituição')
+    ativo = models.PositiveIntegerField(blank=False, null=False, default=1)
     idgrp = models.ForeignKey(
-        UsersGrp, on_delete=models.DO_NOTHING, verbose_name='ID grupo')
+        UsersGrp, on_delete=models.DO_NOTHING, blank=False, verbose_name='grupo')
     login = models.CharField(max_length=25)
     nome = models.CharField(max_length=25, blank=True, null=True)
     numlog = models.PositiveIntegerField(blank=True, null=True)
     senha = models.CharField(max_length=20)
-    acess = models.CharField(max_length=255,
+    acess = models.CharField(max_length=255, blank=False, null=False,
                              default='0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                              verbose_name='Acesso')
     desenv = models.PositiveIntegerField(
@@ -73,6 +79,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'idpescod',
+                       'instit', 'ativo', 'idgrp', 'acess', 'first_name', 'last_name']
 
     class Meta:
         verbose_name = _('user')
