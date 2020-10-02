@@ -27,13 +27,14 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost:8000', ]
+ALLOWED_HOSTS = ['localhost', ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
     # 3rd party apps
+    'corsheaders',
     'rest_framework',
     # django apps
     'django.contrib.admin',
@@ -99,6 +100,25 @@ DATABASES = {
     'default': config('DATABASE_URL', default=default_dburl, cast=dburl)
 }
 
+# Password validation
+# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
@@ -112,6 +132,7 @@ REST_FRAMEWORK = {
 
 REFRESH_TOKEN_SECRET = config('REFRESH_TOKEN_SECRET')
 
+# cors headers
 CORS_ALLOW_CREDENTIALS = True  # to accept cookies via ajax request
 # CORS_ORIGIN_WHITELIST = [
 #     # the domain for front-end app(you can add more than 1)
@@ -130,25 +151,6 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
-]
-
-
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
 ]
 
 

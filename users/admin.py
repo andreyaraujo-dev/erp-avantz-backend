@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth import admin as auth_admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
