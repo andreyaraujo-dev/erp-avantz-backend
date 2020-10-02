@@ -18,6 +18,8 @@ from django.urls import path, include
 from rest_framework import routers
 from users import urls as users_urls
 
+router = routers.DefaultRouter()
+
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),

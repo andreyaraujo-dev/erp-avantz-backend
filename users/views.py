@@ -6,7 +6,7 @@ from rest_framework import exceptions
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .serializers import AccountSerializer
+from .serializers import UsersSerializers
 from .utils import generate_access_token, generate_refresh_token
 from instituicao.models import Instit
 
@@ -14,14 +14,14 @@ from instituicao.models import Instit
 @api_view(['GET'])
 def profile(request):
     user = request.user
-    serialized_user = AccountSerializer(user).data
+    serialized_user = UsersSerializers(user).data
     return Response({'user': serialized_user})
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ensure_csrf_cookie
-def login_view(request):
+def login(request):
     User = get_user_model()
     username = request.data.get('username')
     password = request.data.get('password')
@@ -46,7 +46,7 @@ def login_view(request):
     if instituicao.ativo == 0:
         raise exceptions.AuthenticationFailed('disabled institution')
 
-    serialized_user = AccountSerializer(user).data
+    serialized_user = UsersSerializers(user).data
 
     access_token = generate_access_token(user)
     refresh_token = generate_refresh_token(user)
@@ -118,5 +118,5 @@ def register(request):
     user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email,
                                     idpescod=id_pessoa, instit=id_instituicao, idgrp=id_grupo, ativo=ativo, acess=acesso)
     user.save()
-    serialized_user = AccountSerializer(user).data
+    serialized_user = UsersSerializers(user).data
     return Response({'user': serialized_user})

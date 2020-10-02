@@ -9,6 +9,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.conf import settings
 
 from instituicao.models import Instit
+from pescod.models import Pescod
+from users_groups.models import UsersGrp
 
 
 class UserManager(BaseUserManager):
@@ -44,13 +46,13 @@ class Users(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     is_trusty = models.BooleanField(_('trusty'), default=False,
                                     help_text=_('Designates whether this user has confirmed his account.'))
-    idpescod = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name='ID registro pessoa')
-    instit = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name='ID instituição')
+    idpescod = models.ForeignKey(
+        Pescod, on_delete=models.DO_NOTHING, verbose_name='ID registro pessoa')
+    instit = models.ForeignKey(
+        Instit, on_delete=models.DO_NOTHING, verbose_name='ID instituição')
     ativo = models.PositiveIntegerField(blank=True, null=True)
-    idgrp = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name='ID grupo')
+    idgrp = models.ForeignKey(
+        UsersGrp, on_delete=models.DO_NOTHING, verbose_name='ID grupo')
     login = models.CharField(max_length=25)
     nome = models.CharField(max_length=25, blank=True, null=True)
     numlog = models.PositiveIntegerField(blank=True, null=True)

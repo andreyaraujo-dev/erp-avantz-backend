@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from dj_database_url import parse as dburl
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +33,8 @@ ALLOWED_HOSTS = ['localhost:8000', ]
 # Application definition
 
 INSTALLED_APPS = [
+    # 3rd party apps
+    'rest_framework',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,13 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 3rd party apps
-    'rest_framework',
     # project apps
-    'users'
+    'users.apps.UsersConfig',
+    'instituicao.apps.InstituicaoConfig',
+    'users_groups.apps.UsersGroupsConfig',
+    'pescod.apps.PescodConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,7 +84,7 @@ WSGI_APPLICATION = 'avantz.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DEFAULT_DATABASE = {
+default_db = {
     'ENGINE': config('ENGINE'),
     'NAME': config('NAME'),
     'HOST': config('HOST'),
@@ -88,8 +93,10 @@ DEFAULT_DATABASE = {
     'PORT': config('PORT'),
 }
 
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+
 DATABASES = {
-    'default': config('DATABASE_URL', default=DEFAULT_DATABASE)
+    'default': config('DATABASE_URL', default=default_dburl, cast=dburl)
 }
 
 REST_FRAMEWORK = {
@@ -97,7 +104,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'account.authentication.SafeJWTAuthentication',
+        'users.authentication.SafeJWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -106,10 +113,10 @@ REST_FRAMEWORK = {
 REFRESH_TOKEN_SECRET = config('REFRESH_TOKEN_SECRET')
 
 CORS_ALLOW_CREDENTIALS = True  # to accept cookies via ajax request
-CORS_ORIGIN_WHITELIST = [
-    # the domain for front-end app(you can add more than 1)
-    'http://localhost:3000'
-]
+# CORS_ORIGIN_WHITELIST = [
+#     # the domain for front-end app(you can add more than 1)
+#     'http://localhost:3000'
+# ]
 # CORS URLS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",

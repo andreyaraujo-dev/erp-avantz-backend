@@ -5,8 +5,8 @@ from .viewset import UserViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
-router.register(r'users/set_password',
-                UserViewSet.set_password, basename='set_password')
+# router.register(r'users/set_password',
+#                 UserViewSet.set_password, basename='set_password')
 
 urlpatterns = [
     path('profile', profile, name='profile'),
