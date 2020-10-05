@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'corsheaders',
     'rest_framework',
+    'django_rest_passwordreset',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -153,6 +154,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
