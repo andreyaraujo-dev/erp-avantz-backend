@@ -10,7 +10,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing accounts.
     """
-    # User = get_user_model()
     queryset = Users.objects.all()
     serializer_class = UsersSerializers
     # permission_classes = [IsAccountAdminOrReadOnly]

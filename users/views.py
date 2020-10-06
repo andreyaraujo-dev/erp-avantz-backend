@@ -22,31 +22,6 @@ def profile(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-@csrf_protect
-def set_password(request):
-    self.object = self.get_object()
-    # User = get_user_model()
-    # id_user = request.user.id
-    # user = User.objects.get(pk=id_user)
-    # print(user)
-    serializer = ChangePasswordSerializer(data=request.data)
-    old_password = serializer.data.get("old_password")
-    # print(f'PASSWORD SERIALIZADO -> {serializer}')
-    if serializer.is_valid():
-        # print(f'PASSWORD -> {serializer.data.get("old_password")}')
-        # Check old password
-        if not self.object.check_password(old_password):
-            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
-        self.object.set_password(serializer.data['new_password'])
-        self.object.save()
-        return Response({'status': 'Password updated successfully'})
-    else:
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
 @permission_classes([AllowAny])
 @ensure_csrf_cookie
 def login(request):
@@ -71,7 +46,6 @@ def login(request):
         match_check = check_password(password, user.password)
         if not user.check_password(password):
             raise exceptions.AuthenticationFailed('wrong password')
-            print(f'SENHA INVÁLIDA -> {password}')
 
     # check if the user has been active
     if user.ativo == 0:
