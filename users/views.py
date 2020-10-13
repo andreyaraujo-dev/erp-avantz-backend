@@ -134,19 +134,24 @@ def register(request):
 
 
 @api_view(['POST', 'PUT'])
-@csrf_protect
+@ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 def edit(request):
     User = get_user_model()
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
+    first_name = request.data.get('firstName')
+    last_name = request.data.get('lastName')
     email = request.data.get('email')
-    id_user = request.data.get('id')
+    id_user = request.data.get('userId')
     response = Response()
 
+    print(first_name)
+    print(last_name)
+    print(email)
+    print(id_user)
     try:
         user = User.objects.get(pk=id_user)
-
+        
+        print(user)
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
