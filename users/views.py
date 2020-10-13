@@ -133,6 +133,30 @@ def register(request):
     return Response({'user': serialized_user})
 
 
+@api_view(['POST', 'PUT'])
+@csrf_protect
+@permission_classes([IsAuthenticated])
+def edit(request):
+    User = get_user_model()
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
+    email = request.data.get('email')
+    id_user = request.data.get('id')
+    response = Response()
+
+    try:
+        user = User.objects.get(pk=id_user)
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.save()
+
+        return Response({'message': 'Your data has been successfully changed'})
+    except:
+        raise exceptions.APIException
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     User = get_user_model()
     """

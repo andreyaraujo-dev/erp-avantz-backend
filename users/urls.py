@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import profile, login, register, ChangePasswordView
+from .views import profile, login, register, ChangePasswordView, edit
 from .viewset import UserViewSet
 
 router = DefaultRouter()
@@ -13,6 +13,7 @@ urlpatterns = [
     path('change_password/', ChangePasswordView.as_view(), name='change_password'),
     path('password_reset/', include('django_rest_passwordreset.urls',
                                     namespace='password_reset')),
+    path('edit', edit, name='edit_user'),
 ]
 
 urlpatterns += router.urls
