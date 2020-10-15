@@ -159,7 +159,7 @@ def edit(request):
         user.email = email
         user.save()
 
-        return Response({'message': 'Your data has been successfully changed'})
+        return Response({'detail': 'Your data has been successfully changed'})
     except:
         raise exceptions.APIException
 
@@ -172,6 +172,7 @@ class ChangePasswordView(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
     model = User
     permission_classes = (IsAuthenticated,)
+    authentication_classes = (SafeJWTAuthentication,)
 
     def get_object(self, queryset=None):
         obj = self.request.user
