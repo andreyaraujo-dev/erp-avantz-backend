@@ -6,15 +6,19 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
 from rest_framework import generics
 from .serializers import UsersSerializers, ChangePasswordSerializer
 from .utils import generate_access_token, generate_refresh_token
+from .authentication import SafeJWTAuthentication
 from instituicao.models import Instit
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
 def profile(request):
     user = request.user
     serialized_user = UsersSerializers(user).data
@@ -23,7 +27,6 @@ def profile(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@ensure_csrf_cookie
 def login(request):
     User = get_user_model()
     username = request.data.get('username')
@@ -73,7 +76,7 @@ def login(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_protect
+@ensure_csrf_cookie
 def refresh_token_view(request):
     '''
     To obtain a new access_token this view expects 2 important things:
@@ -111,7 +114,9 @@ def refresh_token_view(request):
 
 
 @api_view(['POST'])
-@csrf_protect
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
 def register(request):
     User = get_user_model()
     username = request.data.get('username')
@@ -134,8 +139,9 @@ def register(request):
 
 
 @api_view(['POST', 'PUT'])
-# @csrf_protect
+@ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
 def edit(request):
     User = get_user_model()
     first_name = request.data.get('firstName')
@@ -146,7 +152,7 @@ def edit(request):
 
     try:
         user = User.objects.get(pk=id_user)
-        
+
         print(user)
         user.first_name = first_name
         user.last_name = last_name

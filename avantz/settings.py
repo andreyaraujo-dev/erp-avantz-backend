@@ -122,10 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'
+        # 'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'users.authentication.SafeJWTAuthentication',
+        # 'users.authentication.SafeJWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -135,14 +135,15 @@ REFRESH_TOKEN_SECRET = config('REFRESH_TOKEN_SECRET')
 
 # cors headers
 CORS_ALLOW_CREDENTIALS = True  # to accept cookies via ajax request
-# CORS_ORIGIN_WHITELIST = [
-#     # the domain for front-end app(you can add more than 1)
-#     'http://localhost:3000'
-# ]
+CORS_ORIGIN_WHITELIST = [
+    # the domain for front-end app(you can add more than 1)
+    'http://localhost:3000',
+    'http://localhost:8000',
+]
 # CORS URLS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:8000",
 ]
 # List of HTTP verbs
 CORS_ALLOW_METHODS = [
@@ -152,6 +153,26 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
+]
+
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    # other allowed hosts...
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:8000',
+    # other allowed origins...
+]
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'refresh_token',
+    'x-csrftoken',
+    'withcredentials'
 ]
 
 # Email Settings
