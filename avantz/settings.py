@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 from pathlib import Path
 from decouple import config
 from dj_database_url import parse as dburl
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'corsheaders',
     'rest_framework',
+    'cloudinary',
     'django_rest_passwordreset',
     # django apps
     'django.contrib.admin',
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     'instituicao.apps.InstituicaoConfig',
     'users_groups.apps.UsersGroupsConfig',
     'pescod.apps.PescodConfig',
+    'imagens_usuarios.apps.ImagensUsuariosConfig',
 ]
 
 MIDDLEWARE = [
@@ -212,3 +217,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # user model
 AUTH_USER_MODEL = 'users.Users'
+
+cloudinary.config(
+    cloud_name="dr06gvkmz",
+    api_key="817176979617961",
+    api_secret="fN0NN6fWJ1q5fEguIrQOAojaOow"
+)
