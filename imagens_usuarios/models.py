@@ -6,8 +6,9 @@ from instituicao.models import Instit
 
 
 class ImagensUsuarios(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         Users, on_delete=models.DO_NOTHING, blank=False, verbose_name='id usuario')
-    instit_id = models.ForeignKey(
+    instit = models.ForeignKey(
         Instit, on_delete=models.DO_NOTHING, blank=False, verbose_name='id instituicao')
     imagem = CloudinaryField(blank=False, verbose_name='imagem')
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)

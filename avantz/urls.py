@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from users import urls as users_urls
-from imagens_usuarios.views import ImagemUsuarioCloud
+from imagens_usuarios import urls as imagem_usuario_urls
 
 router = routers.DefaultRouter()
 
@@ -26,5 +26,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('users/', include(users_urls)),
-    path('imagem/', ImagemUsuarioCloud.as_view(), name='imagemCloud'),
+    path('imagem/', include(imagem_usuario_urls)),
 ]
