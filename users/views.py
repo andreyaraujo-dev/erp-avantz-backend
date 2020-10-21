@@ -35,30 +35,31 @@ def login(request):
     # checks if the username and password have been sent
     if (username is None) or (password is None):
         raise exceptions.AuthenticationFailed(
-            'username and password required')
+            'Usuário e senha são obrigatórios')
     user = User.objects.filter(username=username).first()
     # check if the user was found
     if(user is None):
-        raise exceptions.AuthenticationFailed('user not found')
+        raise exceptions.AuthenticationFailed('Usuário não econtrado')
 
     # check if the password has been correct
     if user.senha:
         if password != user.password:
-            raise exceptions.AuthenticationFailed('wrong password')
+            raise exceptions.AuthenticationFailed('Senha incorreta')
     else:
         match_check = check_password(password, user.password)
         if not user.check_password(password):
-            raise exceptions.AuthenticationFailed('wrong password')
+            raise exceptions.AuthenticationFailed('Senha incorreta')
 
     # check if the user has been active
     if user.ativo == 0:
-        raise exceptions.AuthenticationFailed('disabled user')
+        raise exceptions.AuthenticationFailed('Este usuário está desativado')
 
     instituicao = Instit.objects.get(pk=user.instit_id)
 
     # check if the institution has ben active
     if instituicao.ativo == 0:
-        raise exceptions.AuthenticationFailed('disabled institution')
+        raise exceptions.AuthenticationFailed(
+            'A instituição desse usuário está desativada')
 
     serialized_user = UsersSerializers(user).data
 
@@ -87,27 +88,28 @@ def refresh_token_view(request):
     refresh_token = request.COOKIES.get('refreshtoken')
     if refresh_token is None:
         raise exceptions.AuthenticationFailed(
-            'Authentication credentials were not provided.')
+            'As credenciais de autenticação não foram fornecidas.')
     try:
         payload = jwt.decode(
             refresh_token, settings.REFRESH_TOKEN_SECRET, algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
         raise exceptions.AuthenticationFailed(
-            'expired refresh token, please login again.')
+            'Token de atualização expirado, faça login novamente.')
 
     user = User.objects.filter(id=payload.get('user_id')).first()
     if user is None:
-        raise exceptions.AuthenticationFailed('User not found')
+        raise exceptions.AuthenticationFailed('Usuário não encontrado')
 
     if not user.is_active:
-        raise exceptions.AuthenticationFailed('user is inactive')
+        raise exceptions.AuthenticationFailed('Este usuário está desativado')
     # check if the user has been active
     if user.ativo == 0:
-        raise exceptions.AuthenticationFailed('disabled user')
+        raise exceptions.AuthenticationFailed('Este usuário está desativado')
     instituicao = Instit.objects.get(pk=user.instit)
     # check if the institution has ben active
     if instituicao.ativo == 0:
-        raise exceptions.AuthenticationFailed('disabled institution')
+        raise exceptions.AuthenticationFailed(
+            'A instituição deste usuário está desativada')
 
     access_token = generate_access_token(user)
     return Response({'access_token': access_token})
@@ -124,15 +126,15 @@ def register(request):
     first_name = request.data.get('first_name')
     last_name = request.data.get('last_name')
     email = request.data.get('email')
-    id_pessoa = request.data.get('id_pessoa')
-    id_instituicao = request.data.get('id_instituicao')
-    id_grupo = request.data.get('id_grupo')
-    ativo = request.data.get('ativo')
-    acesso = request.data.get('acesso')
+    person_id = request.data.get('idPerson')
+    institution_id = request.data.get('idInstitution')
+    group_id = request.data.get('idGroup')
+    active = request.data.get('active')
+    access = request.data.get('access')
     response = Response()
 
     user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email,
-                                    idpescod=id_pessoa, instit=id_instituicao, idgrp=id_grupo, ativo=ativo, acess=acesso)
+                                    idpescod=person_id, instit=institution_id, idgrp=group_id, ativo=active, acess=access)
     user.save()
     serialized_user = UsersSerializers(user).data
     return Response({'user': serialized_user})
@@ -148,20 +150,85 @@ def edit(request):
     last_name = request.data.get('lastName')
     email = request.data.get('email')
     id_user = request.data.get('userId')
-    response = Response()
 
     try:
         user = User.objects.get(pk=id_user)
 
-        print(user)
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
         user.save()
 
-        return Response({'detail': 'Your data has been successfully changed'})
+        return Response({'detail': 'Seus dados foram atualizados com sucesso!'})
     except:
         raise exceptions.APIException
+
+
+@api_view(['GET'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def list_all(request):
+    User = get_user_model()
+    id_instit = request.user.instit_id
+    try:
+        users = User.objects.filter(instit_id=id_instit)
+        users_serialized = UsersSerializers(users, many=True).data
+
+        return Response({'users': users_serialized})
+    except:
+        raise exceptions.APIException
+
+
+@api_view(['PUT'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def admin_edit(request):
+    """ 
+    FUNCTION FOR THE ADMINISTRATOR TO EDIT THE USER DATA OF THEIR RESPECTIVE INSTITUTION
+    """
+    User = get_user_model()
+    username = request.data.get('username')
+    first_name = request.data.get('firstName')
+    last_name = request.data.get('lastName')
+    email = request.data.get('email')
+    id_user = request.data.get('userId')
+    acess = request.data.get('access')
+    idgrp_id = request.data.get('idGroupUser')
+
+    try:
+        user = User.objects.get(pk=id_user)
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.username = username
+        user.acess = acess
+        user.save()
+
+        return Response({'detail': 'Os dados foram alterados com sucesso!'})
+    except:
+        raise exceptions.APIException
+
+
+@api_view(['PUT'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def disabled_user(request):
+    User = get_user_model()
+    user_id = request.data.get('userId')
+
+    try:
+        user = User.objects.get(pk=user_id)
+        user.ativo = 0
+        user.is_active = 0
+        user.save()
+
+        return Response({'detail': 'Usuário deletado com sucesso'})
+    except:
+        return Response({'detail': exceptions.APIException})
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -185,14 +252,14 @@ class ChangePasswordView(generics.UpdateAPIView):
         if serializer.is_valid():
             # Check old password
             if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"old_password": ["Senha incorreta."]}, status=status.HTTP_400_BAD_REQUEST)
             # set_password also hashes the password that the user will get
             self.object.set_password(serializer.data.get("new_password"))
             self.object.save()
             response = {
                 'status': 'success',
                 'code': status.HTTP_200_OK,
-                'message': 'Password updated successfully',
+                'detail': 'Sua senha foi atualizada com sucesso!',
                 'data': []
             }
             # make sure the user stays logged in

@@ -32,23 +32,27 @@ class SafeJWTAuthentication(BaseAuthentication):
                 access_token, settings.SECRET_KEY, algorithms=['HS256'])
 
         except jwt.ExpiredSignatureError:
-            raise exceptions.AuthenticationFailed('access_token expired')
+            raise exceptions.AuthenticationFailed(
+                'Token de acesso expirado, faça login novamente')
         except IndexError:
-            raise exceptions.AuthenticationFailed('Token prefix missing')
+            raise exceptions.AuthenticationFailed('Prefixo do token ausente')
 
         user = User.objects.filter(id=payload['user_id']).first()
         if user is None:
-            raise exceptions.AuthenticationFailed('User not found')
+            raise exceptions.AuthenticationFailed('Usuário não encontrado')
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed('user is inactive')
+            raise exceptions.AuthenticationFailed(
+                'Este usuário está desativado')
         # check if the user has been active
         if user.ativo == 0:
-            raise exceptions.AuthenticationFailed('disabled user')
+            raise exceptions.AuthenticationFailed(
+                'Este usuário está desativado')
         instituicao = Instit.objects.get(pk=user.instit_id)
         # check if the institution has ben active
         if instituicao.ativo == 0:
-            raise exceptions.AuthenticationFailed('disabled institution')
+            raise exceptions.AuthenticationFailed(
+                'A instituição deste usuário está desativada')
 
         self.enforce_csrf(request)
         return (user, None)

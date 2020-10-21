@@ -7,8 +7,8 @@ class ImagensUsuariosSerializer(serializers.ModelSerializer):
         model = ImagensUsuarios
         fields = '__all__'
 
-    def to_representation(self, instance):
-        representation = super(ImagensUsuariosSerializer,
-                               self).to_representation(instance)
-        representation['imagem'] = instance.imagem.url
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super(ImagensUsuariosSerializer,
+    #                            self).to_representation(instance)
+    #     representation['imagem'] = instance.imagem.url
+    #     return representation
