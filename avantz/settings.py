@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'cloudinary',
     'django_rest_passwordreset',
+    'storages',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -218,8 +219,28 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # user model
 AUTH_USER_MODEL = 'users.Users'
 
-cloudinary.config(
-    cloud_name="dr06gvkmz",
-    api_key="817176979617961",
-    api_secret="fN0NN6fWJ1q5fEguIrQOAojaOow"
-)
+
+# AWS SETTIGNS
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+AWS_STATIC_LOCATION = 'static'
+STATICFILES_STORAGE = 'avantz.storage_backends.StaticStorage'
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+
+AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+DEFAULT_FILE_STORAGE = 'avantz.storage_backends.PublicMediaStorage'
+
+AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
+PRIVATE_FILE_STORAGE = 'avantz.storage_backends.PrivateMediaStorage'
