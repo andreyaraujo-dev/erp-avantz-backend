@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import profile, login, register, ChangePasswordView, edit, list_all, admin_edit, disabled_user
+from .views import profile, login, register, ChangePasswordView, edit, list_all, admin_edit, disabled_user, details
 from .viewset import UserViewSet
 
 router = DefaultRouter()
@@ -17,6 +17,7 @@ urlpatterns = [
     path('list', list_all, name='list_all'),
     path('admin_edit', admin_edit, name='admin_edit'),
     path('delete', disabled_user, name='disabled_user'),
+    path('details', details, name='details'),
 ]
 
 urlpatterns += router.urls
