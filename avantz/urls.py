@@ -18,6 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 from users import urls as users_urls
 from imagens_usuarios import urls as imagem_usuario_urls
+from permissions import urls as permissions_urls
 
 router = routers.DefaultRouter()
 
@@ -27,4 +28,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('users/', include(users_urls)),
     path('imagem/', include(imagem_usuario_urls)),
+    path('permissions/', include(permissions_urls)),
 ]

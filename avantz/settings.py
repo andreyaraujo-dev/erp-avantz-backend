@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'users_groups.apps.UsersGroupsConfig',
     'pescod.apps.PescodConfig',
     'imagens_usuarios.apps.ImagensUsuariosConfig',
+    'permissions.apps.PermissionsConfig',
 ]
 
 MIDDLEWARE = [
