@@ -129,13 +129,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'users.authentication.SafeJWTAuthentication',
+        'users.authentication.SafeJWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 100,
 }
 
 REFRESH_TOKEN_SECRET = config('REFRESH_TOKEN_SECRET')

@@ -10,4 +10,3 @@ class Rotinas(models.Model):
     class Meta:
         managed = False
         db_table = 'rotinas'
-        ordering = ['id']

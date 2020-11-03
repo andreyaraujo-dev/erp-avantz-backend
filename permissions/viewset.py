@@ -6,6 +6,6 @@ from django.core.paginator import Paginator
 
 
 class RotinasViewSet(viewsets.ModelViewSet):
-    queryset = Rotinas.objects.all().order_by('-id')
+    queryset = Rotinas.objects.all()
     serializer_class = RotinasSerializer
     # pagination_class = Paginator(queryset, 20)

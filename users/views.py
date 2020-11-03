@@ -232,19 +232,21 @@ def disabled_user(request):
 
 
 @api_view(['GET'])
-@ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
 def details(request):
     User = get_user_model()
     user_id = request.data.get('idUser')
+    # id_user = request.get['pk']
 
     try:
         user = User.objects.get(pk=user_id)
         user_serialized = UsersSerializers(user).data
         return Response({'user': user_serialized})
     except:
-        return Response({'detail': 'Não foi possível pesquisar os dados do usuário'})
+        # return Response({'detail': 'Não foi possível pesquisar os dados do usuário'})
+        raise exceptions.APIException
 
 
 class ChangePasswordView(generics.UpdateAPIView):

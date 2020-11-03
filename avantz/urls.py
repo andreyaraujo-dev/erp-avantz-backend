@@ -15,12 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
+from rest_framework.routers import DefaultRouter
 from users import urls as users_urls
 from imagens_usuarios import urls as imagem_usuario_urls
 from permissions import urls as permissions_urls
+from users_groups import urls as user_groups_urls
+from permissions.viewset import RotinasViewSet
+from users_groups.viewset import UserGroupsViewSet
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
+router.register(r'user_permissions', RotinasViewSet)
+router.register(r'user_groups', UserGroupsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -28,5 +33,8 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('users/', include(users_urls)),
     path('imagem/', include(imagem_usuario_urls)),
+    path('groups/', include(user_groups_urls)),
     path('permissions/', include(permissions_urls)),
 ]
+
+# urlpatterns += router.urls
