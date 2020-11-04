@@ -15,9 +15,7 @@ from .serializers import RotinasSerializer
 def index(request):
     try:
         permissions = Rotinas.objects.filter(sit=1)
-        print(f'PERMISSIONS > {permissions}')
-        permissions_serialized = RotinasSerializer(permissions).data
-        print(f'PERMISSIONS SERIALIZED > {permissions_serialized}')
-        return Response({"permissions": permissions_serialized})
+        permissions_serialized = RotinasSerializer(permissions, many=True)
+        return Response({"permissions": permissions_serialized.data})
     except:
         raise exceptions.APIException

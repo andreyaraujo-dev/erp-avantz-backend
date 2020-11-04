@@ -10,3 +10,6 @@ class Rotinas(models.Model):
     class Meta:
         managed = False
         db_table = 'rotinas'
+
+    def __str__(self):
+        return self.descr

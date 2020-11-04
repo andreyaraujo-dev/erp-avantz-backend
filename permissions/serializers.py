@@ -5,4 +5,4 @@ from .models import Rotinas
 class RotinasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rotinas
-        fields = ['Id', 'descr', ]
+        fields = '__all__'
