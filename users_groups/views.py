@@ -17,6 +17,6 @@ def index(request):
     try:
         groups = UsersGrp.objects.filter(instit=id_instituicao)
         groups_serialized = UserGroupsSerializer(groups, many=True).data
-        return Response({"groups": groups_serialized})
+        return Response(groups_serialized)
     except:
         raise exceptions.APIException

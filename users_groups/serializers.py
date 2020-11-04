@@ -5,4 +5,4 @@ from .models import UsersGrp
 class UserGroupsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsersGrp
-        fields = ['grupo', 'acess']
+        fields = '__all__'
