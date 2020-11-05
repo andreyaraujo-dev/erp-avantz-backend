@@ -21,6 +21,7 @@ class Pescod(models.Model):
     class Meta:
         managed = False
         db_table = 'pescod'
+        ordering = ['nomeorrazaosocial']
 
     def __str__(self):
         return self.nomeorrazaosocial

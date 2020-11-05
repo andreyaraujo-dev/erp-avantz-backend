@@ -116,15 +116,15 @@ def refresh_token_view(request):
 
 
 @api_view(['POST'])
+@ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
 def register(request):
     User = get_user_model()
     username = request.data.get('username')
     password = request.data.get('password')
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
+    first_name = request.data.get('firstName')
+    last_name = request.data.get('lastName')
     email = request.data.get('email')
     person_id = request.data.get('idPerson')
     institution_id = request.data.get('idInstitution')
@@ -133,11 +133,17 @@ def register(request):
     access = request.data.get('access')
     response = Response()
 
-    user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email,
-                                    idpescod=person_id, instit=institution_id, idgrp=group_id, ativo=active, acess=access)
-    user.save()
-    serialized_user = UsersSerializers(user).data
-    return Response({'user': serialized_user})
+    try:
+        print(f'DADOS RECEBIDOS')
+        user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email,
+                                        idpescod=person_id, instit=institution_id, idgrp=group_id, ativo=active, acess=access)
+        user.save()
+        print(f'USUARIO SALVO {user}')
+        serialized_user = UsersSerializers(user)
+        print(f'USUARIO SERIALIZADO {serialized_user}')
+        return Response({'user': serialized_user.data})
+    except:
+        raise exceptions.APIException('Não foi possível cadastrar o usuário')
 
 
 @api_view(['POST', 'PUT'])

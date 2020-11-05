@@ -23,8 +23,11 @@ class UserManager(BaseUserManager):
         if not username:
             raise ValueError(_('The given username must be set'))
         email = self.normalize_email(email)
-        user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, idpescod=idpescod,
-                          instit=instit, ativo=ativo, idgrp=idgrp, acess=acess)
+        id_pescod = Pescod.objects.get(pk=idpescod)
+        id_instit = Instit.objects.get(pk=instit)
+        id_user_group = UsersGrp.objects.get(pk=idgrp)
+        user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, idpescod=id_pescod,
+                          instit=id_instit, ativo=ativo, idgrp=id_user_group, acess=acess)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -64,10 +67,10 @@ class Users(AbstractBaseUser, PermissionsMixin):
     ativo = models.PositiveIntegerField(blank=False, null=False, default=1)
     idgrp = models.ForeignKey(
         UsersGrp, on_delete=models.DO_NOTHING, blank=False, verbose_name='grupo')
-    login = models.CharField(max_length=25)
+    login = models.CharField(max_length=25, blank=True, null=True)
     nome = models.CharField(max_length=25, blank=True, null=True)
     numlog = models.PositiveIntegerField(blank=True, null=True)
-    senha = models.CharField(max_length=20)
+    senha = models.CharField(max_length=20, blank=True, null=True)
     acess = models.CharField(max_length=255, blank=False, null=False,
                              default='0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                              verbose_name='Acesso')
