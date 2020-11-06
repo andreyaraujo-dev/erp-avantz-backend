@@ -134,13 +134,10 @@ def register(request):
     response = Response()
 
     try:
-        print(f'DADOS RECEBIDOS')
         user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email,
                                         idpescod=person_id, instit=institution_id, idgrp=group_id, ativo=active, acess=access)
         user.save()
-        print(f'USUARIO SALVO {user}')
         serialized_user = UsersSerializers(user)
-        print(f'USUARIO SERIALIZADO {serialized_user}')
         return Response({'user': serialized_user.data})
     except:
         raise exceptions.APIException('Não foi possível cadastrar o usuário')
