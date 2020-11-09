@@ -152,7 +152,7 @@ def edit(request):
     first_name = request.data.get('firstName')
     last_name = request.data.get('lastName')
     email = request.data.get('email')
-    id_user = request.data.get('userId')
+    id_user = request.user.id
 
     try:
         user = User.objects.get(pk=id_user)
@@ -162,7 +162,8 @@ def edit(request):
         user.email = email
         user.save()
 
-        return Response({'detail': 'Seus dados foram atualizados com sucesso!'})
+        user_serialized = UsersSerializers(user)
+        return Response({'detail': 'Seus dados foram atualizados com sucesso!', 'user': user_serialized.data})
     except:
         raise exceptions.APIException
 
@@ -187,7 +188,7 @@ def list_all(request):
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-def admin_edit(request):
+def admin_edit(request, id):
     """ 
     FUNCTION FOR THE ADMINISTRATOR TO EDIT THE USER DATA OF THEIR RESPECTIVE INSTITUTION
     """
@@ -196,12 +197,11 @@ def admin_edit(request):
     first_name = request.data.get('firstName')
     last_name = request.data.get('lastName')
     email = request.data.get('email')
-    id_user = request.data.get('userId')
     acess = request.data.get('access')
     idgrp_id = request.data.get('idGroupUser')
 
     try:
-        user = User.objects.get(pk=id_user)
+        user = User.objects.get(pk=id)
 
         user.first_name = first_name
         user.last_name = last_name
@@ -210,7 +210,8 @@ def admin_edit(request):
         user.acess = acess
         user.save()
 
-        return Response({'detail': 'Os dados foram alterados com sucesso!'})
+        user_serialized = UsersSerializers(user)
+        return Response({'detail': 'Os dados foram alterados com sucesso!', 'user': user_serialized.data})
     except:
         raise exceptions.APIException
 
@@ -219,12 +220,12 @@ def admin_edit(request):
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-def disabled_user(request):
+def disabled_user(request, id):
     User = get_user_model()
-    user_id = request.data.get('userId')
+    # user_id = request.data.get('userId')
 
     try:
-        user = User.objects.get(pk=user_id)
+        user = User.objects.get(pk=id)
         user.ativo = 0
         user.is_active = 0
         user.save()
@@ -238,13 +239,11 @@ def disabled_user(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
-def details(request):
+def details(request, id):
     User = get_user_model()
-    user_id = request.data.get('idUser')
-    # id_user = request.get['pk']
 
     try:
-        user = User.objects.get(pk=user_id)
+        user = User.objects.get(pk=id)
         user_serialized = UsersSerializers(user).data
         return Response({'user': user_serialized})
     except:

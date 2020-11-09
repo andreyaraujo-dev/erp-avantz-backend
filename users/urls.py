@@ -14,10 +14,10 @@ urlpatterns = [
     path('password_reset/', include('django_rest_passwordreset.urls',
                                     namespace='password_reset')),
     path('edit', edit, name='edit_user'),
-    path('list', list_all, name='list_all'),
-    path('admin_edit', admin_edit, name='admin_edit'),
-    path('delete', disabled_user, name='disabled_user'),
-    path('details', details, name='details'),
+    path('list/<int:id>', list_all, name='list_all'),
+    path('admin_edit/<int:id>', admin_edit, name='admin_edit'),
+    path('delete/<int:id>', disabled_user, name='disabled_user'),
+    path('details/<int:id>', details, name='details'),
 ]
 
 urlpatterns += router.urls
