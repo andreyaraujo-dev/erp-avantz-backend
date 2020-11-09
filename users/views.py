@@ -184,7 +184,7 @@ def list_all(request):
         raise exceptions.APIException
 
 
-@api_view(['PUT'])
+@api_view(['PUT', 'POST'])
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
@@ -245,7 +245,7 @@ def details(request, id):
     try:
         user = User.objects.get(pk=id)
         user_serialized = UsersSerializers(user).data
-        return Response({'user': user_serialized})
+        return Response(user_serialized)
     except:
         # return Response({'detail': 'Não foi possível pesquisar os dados do usuário'})
         raise exceptions.APIException
