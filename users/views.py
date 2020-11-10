@@ -199,14 +199,16 @@ def admin_edit(request, id):
     email = request.data.get('email')
     acess = request.data.get('access')
     idgrp_id = request.data.get('idGroupUser')
+    idpescod_id = request.data.get('idPerson')
 
     try:
         user = User.objects.get(pk=id)
-
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
         user.username = username
+        user.idgrp_id = idgrp_id
+        user.idpescod_id = idpescod_id
         user.acess = acess
         user.save()
 
