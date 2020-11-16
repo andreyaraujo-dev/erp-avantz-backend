@@ -74,6 +74,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     acess = models.CharField(max_length=255, blank=False, null=False,
                              default='0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
                              verbose_name='Acesso')
+    foto = models.ImageField(
+        upload_to='images/%Y/%m/%d', blank=True, null=True)
     desenv = models.PositiveIntegerField(
         blank=True, null=True, verbose_name='Desenvolvedor')
     datsenha = models.DateTimeField(blank=True, null=True)

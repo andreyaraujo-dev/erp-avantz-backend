@@ -20,9 +20,11 @@ from instituicao.models import Instit
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
 def profile(request):
-    user = request.user
-    serialized_user = UsersSerializers(user).data
-    return Response({'user': serialized_user})
+    User = get_user_model()
+    user_id = request.user.id
+    user = User.objects.get(pk=user_id)
+    serialized_user = UsersSerializers(user)
+    return Response({'user': serialized_user.data})
 
 
 @api_view(['POST'])
@@ -251,6 +253,25 @@ def details(request, id):
     except:
         # return Response({'detail': 'Não foi possível pesquisar os dados do usuário'})
         raise exceptions.APIException
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def upload_image(request):
+    User = get_user_model()
+    try:
+        user_id = request.user.id
+        user = User.objects.get(pk=user_id)
+        user.foto = request.FILES['foto']
+        user.save()
+
+        user_updated = User.objects.get(pk=user_id)
+        image_url = user_updated.foto.url
+        return Response({"detail": "imagem enviada com sucesso", "imageURL": image_url}, status=status.HTTP_201_CREATED)
+    except:
+        return Response({"detail": exceptions.APIException}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

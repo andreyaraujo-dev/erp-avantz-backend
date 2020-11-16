@@ -21,6 +21,8 @@ from imagens_usuarios import urls as imagem_usuario_urls
 from permissions import urls as permissions_urls
 from users_groups import urls as user_groups_urls
 from pescod import urls as pescod_urls
+from django.conf.urls.static import static
+from django.conf import settings
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -38,6 +40,6 @@ urlpatterns = [
     path('groups/', include(user_groups_urls)),
     path('permissions/', include(permissions_urls)),
     path('persons/', include(pescod_urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls
