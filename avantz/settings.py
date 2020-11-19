@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'instituicao.apps.InstituicaoConfig',
     'users_groups.apps.UsersGroupsConfig',
     'pescod.apps.PescodConfig',
-    'imagens_usuarios.apps.ImagensUsuariosConfig',
     'permissions.apps.PermissionsConfig',
 ]
 
