@@ -33,12 +33,12 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, first_name, last_name, email, password, idpescod, instit, ativo, idgrp, acess):
-        id_pescod = Pescod.objects.get(pk=idpescod)
-        id_instit = Instit.objects.get(pk=instit)
-        id_user_group = UsersGrp.objects.get(pk=idgrp)
+        # id_pescod = Pescod.objects.get(pk=idpescod)
+        # id_instit = Instit.objects.get(pk=instit)
+        # id_user_group = UsersGrp.objects.get(pk=idgrp)
 
         user = self.create_user(username, first_name=first_name, last_name=last_name, email=email, password=password,
-                                idpescod=id_pescod, instit=id_instit, ativo=ativo, idgrp=id_user_group, acess=acess)
+                                idpescod=idpescod, instit=instit, ativo=ativo, idgrp=idgrp, acess=acess)
         user.is_active = True
         user.is_superuser = True
         user.is_staff = True

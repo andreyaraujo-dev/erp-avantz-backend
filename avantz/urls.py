@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from users import urls as users_urls
-from imagens_usuarios import urls as imagem_usuario_urls
 from permissions import urls as permissions_urls
 from users_groups import urls as user_groups_urls
 from pescod import urls as pescod_urls
@@ -36,7 +35,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('users/', include(users_urls)),
-    path('imagem/', include(imagem_usuario_urls)),
+    # path('imagem/', include(imagem_usuario_urls)),
     path('groups/', include(user_groups_urls)),
     path('permissions/', include(permissions_urls)),
     path('persons/', include(pescod_urls)),
