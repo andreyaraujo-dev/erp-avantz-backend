@@ -143,11 +143,13 @@ CORS_ORIGIN_WHITELIST = [
     # the domain for front-end app(you can add more than 1)
     'http://localhost:3000',
     'http://localhost:8000',
+    'https://gcomdev.herokuapp.com',
 ]
 # CORS URLS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
+    'https://gcomdev.herokuapp.com',
 ]
 # List of HTTP verbs
 CORS_ALLOW_METHODS = [
@@ -168,6 +170,7 @@ CORS_ALLOW_METHODS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:8000',
+    'https://gcomdev.herokuapp.com',
     # other allowed origins...
 ]
 
