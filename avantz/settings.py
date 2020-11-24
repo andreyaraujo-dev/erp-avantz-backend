@@ -29,8 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', 'https://gcomdev.herokuapp.com',
-                 'https://api-gcomdev.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', 'https://gcomdev.herokuapp.com', ]
 
 
 # Application definition
@@ -146,14 +145,12 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:8000',
     'https://gcomdev.herokuapp.com',
-    'https://api-gcomdev.herokuapp.com',
 ]
 # CORS URLS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
     'https://gcomdev.herokuapp.com',
-    'https://api-gcomdev.herokuapp.com',
 ]
 # List of HTTP verbs
 CORS_ALLOW_METHODS = [
@@ -175,7 +172,6 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:8000',
     'https://gcomdev.herokuapp.com',
-    'https://api-gcomdev.herokuapp.com',
     # other allowed origins...
 ]
 
