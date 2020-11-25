@@ -55,6 +55,12 @@ INSTALLED_APPS = [
     'users_groups.apps.UsersGroupsConfig',
     'pescod.apps.PescodConfig',
     'permissions.apps.PermissionsConfig',
+    'emails.apps.EmailsConfig',
+    'enderecos.apps.EnderecosConfig',
+    'pessoa_fisica.apps.PessoaFisicaConfig',
+    'pessoa_juridica.apps.PessoaJuridicaConfig',
+    'referencias.apps.ReferenciasConfig',
+    'telefones.apps.TelefonesConfig',
 ]
 
 MIDDLEWARE = [
@@ -235,4 +241,4 @@ MEDIA_URL = '/media/'
 # Activate Django-Heroku.
 django_heroku.settings(locals())
 
-del DATABASES['default']['OPTIONS']['sslmode']
+# del DATABASES['default']['OPTIONS']['sslmode']
