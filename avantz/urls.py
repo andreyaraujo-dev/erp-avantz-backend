@@ -21,6 +21,7 @@ from permissions import urls as permissions_urls
 from users_groups import urls as user_groups_urls
 from pescod import urls as pescod_urls
 from emails import urls as mails_urls
+from enderecos import urls as adresses_urls
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -41,6 +42,7 @@ urlpatterns = [
     path('permissions/', include(permissions_urls)),
     path('persons/', include(pescod_urls)),
     path('mails/', include(mails_urls)),
+    path('adresses/', include(adresses_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls

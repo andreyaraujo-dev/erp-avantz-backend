@@ -4,7 +4,6 @@ from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
-import json
 
 from users.authentication import SafeJWTAuthentication
 from instituicao.models import Instit
@@ -38,10 +37,11 @@ def store(request):
             mail_registered = Mails(id_pessoa_cod_fk=mail['idPerson'],
                                     situacao=mail['situation'], email=mail['userMail'])
             mail_registered.save()
-            return Response({'Todos os dados de email foram salvos'})
         except:
             raise exceptions.APIException(
                 'Não foi possível salvar os dados de email')
+
+    return Response({'Todos os dados de email foram salvos'})
 
 
 @api_view(['PUT'])
@@ -56,10 +56,10 @@ def update(request):
             userMail = Mails.objects.get(pk=mail['idMail'])
             userMail.email = mail['userMail']
             userMail.save()
-            return Response({'detail': 'Todos os dados de email foram atualizados'})
         except:
             raise exceptions.APIException(
                 'Não foi possível atualizar o registor de email')
+    return Response({'detail': 'Todos os dados de email foram atualizados'})
 
 
 @api_view(['PUT'])

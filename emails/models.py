@@ -12,9 +12,3 @@ class Mails(models.Model):
     class Meta:
         managed = False
         db_table = 'mails'
-
-    def create(self, id_person, situacao, email):
-        mail = self.model(id_pessoa_cod_fk=id_person,
-                          situacao=situacao, email=email)
-        mail.save()
-        return mail
