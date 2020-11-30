@@ -27,6 +27,7 @@ from emails import urls as mails_urls
 from enderecos import urls as adresses_urls
 from ref_bancarias import urls as banking_ref_persons_urls
 from referencias import urls as person_references_urls
+from telefones import urls as telefones_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -48,6 +49,7 @@ urlpatterns = [
     path('adresses/', include(adresses_urls)),
     path('banking_references/', include(banking_ref_persons_urls)),
     path('persons_references/', include(person_references_urls)),
+    path('phones/', include(telefones_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls
