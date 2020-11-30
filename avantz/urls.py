@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 from rest_framework.routers import DefaultRouter
+
 from users import urls as users_urls
 from permissions import urls as permissions_urls
 from users_groups import urls as user_groups_urls
 from pescod import urls as pescod_urls
 from emails import urls as mails_urls
 from enderecos import urls as adresses_urls
-from django.conf.urls.static import static
-from django.conf import settings
+from ref_bancarias import urls as banking_ref_persons
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -43,6 +45,7 @@ urlpatterns = [
     path('persons/', include(pescod_urls)),
     path('mails/', include(mails_urls)),
     path('adresses/', include(adresses_urls)),
+    path('banking_references/', include(banking_ref_persons)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls

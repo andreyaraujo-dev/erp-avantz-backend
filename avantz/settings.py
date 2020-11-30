@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'pessoa_juridica.apps.PessoaJuridicaConfig',
     'referencias.apps.ReferenciasConfig',
     'telefones.apps.TelefonesConfig',
+    'ref_bancarias.apps.RefBancariasConfig'
 ]
 
 MIDDLEWARE = [
