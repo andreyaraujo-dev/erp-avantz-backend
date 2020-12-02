@@ -11,6 +11,11 @@ from .serializers import PescodSerializer
 from .models import Pescod
 from pessoa_fisica.models import Pesfis
 from pessoa_juridica.models import Pesjur
+from enderecos.models import Enderecos
+from telefones.models import Telefones
+from emails.models import Mails
+from referencias.models import Referencias
+from ref_bancarias.models import Refbanco
 
 
 @api_view(['GET'])
@@ -34,22 +39,36 @@ def index(request):
 @ensure_csrf_cookie
 def store_person_physical(request):
     id_institution = request.user.instit_id
+    cpf = request.data.get('personCPF')
+    """  
+    FIND CPF ON DATABASE. IF EXIST, NO REGISTER AND RETURN
+    """
+    person = Pescod.objects.filter(
+        id_instituicao_fk=id_institution, cpfcnpj=cpf, sit=1)
+    if person:
+        return Response({'detail': 'Já existe um registro ativo com este CPF. Por favor revise os dados.'})
+
+    """  
+    REGISTER PESCOD
+    """
     type_person = request.data.get('personType')
     provider = request.data.get('personIsProvider')
-    cpf_cnpj = request.data.get('cpfCnpj')
-    name_or_company_name = request.data.get('nameOrCompanyName')
+    name = request.data.get('personName')
     person_photo = request.data.get('personPhoto')
     person_limit = request.data.get('personLimit')
     person_balance = request.data.get('personBalance')
 
-    person = Pescod(id_instituicao_fk=id_institution, tipo=type_person, sit=1, forn=provider, cpfcnpj=cpf_cnpj,
-                    nomeorrazaosocial=name_or_company_name, foto=person_photo, img_bites=0, limite=person_limit, saldo=person_balance, data_criacao=timezone.now())
+    person = Pescod(id_instituicao_fk=id_institution, tipo=type_person, sit=1, forn=provider, cpfcnpj=cpf,
+                    nomeorrazaosocial=name, foto=person_photo, img_bites=0, limite=person_limit, saldo=person_balance, data_criacao=timezone.now())
     try:
         person.save()
     except:
         raise exceptions.APIException(
             'Não foi possível cadastrar o registro da pessoa. Verifique os dados inseridos.')
 
+    """  
+    REGISTER PHYSICAL PERSON
+    """
     person_registred_id = person.id_pessoa_cod
     identity = request.data.get('personIdentity')
     issuer_identity = request.data.get('issuerIdentity')
@@ -96,6 +115,74 @@ def store_person_physical(request):
     except:
         raise exceptions.APIException(
             'Não foi possível cadastrar os dados de pessoa física')
+
+    """ 
+    REGISTER ADRESS
+    """
+    adresses_array = request.data.get('adresses')
+    for adress in adresses_array:
+        try:
+            adress_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=person_registred_id, endtip=1, rua=adress['street'],
+                                         numero=adress['numberHouse'], complemento=adress['complement'], bairro=adress['neighborhood'],
+                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['stateAdress'], data_criacao=timezone.now())
+            adress_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar todos os dados de endereço')
+
+    """  
+    REGISTER PHONE
+    """
+    phones_array = request.data.get('phones')
+    for phone in phones_array:
+        try:
+            phone_registered = Telefones(id_pessoa_cod_fk=person_registred_id,
+                                         situacao=1, tel=phone['phoneNumber'], data_criacao=timezone.now())
+            phone_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar os dados de contato')
+
+    """ 
+    REGISTER MAIL    
+    """
+    mails_array = request.data.get('mails')
+    for mail in mails_array:
+        try:
+            mail_registered = Mails(
+                id_pessoa_cod_fk=person_registred_id, situacao=1, email=mail['userMail'], data_criacao=timezone.now())
+            mail_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar os dados de email')
+
+    """  
+    REGISTER REFERENCES
+    """
+    references_array = request.data.get('personReferences')
+    for reference in references_array:
+        try:
+            references_registered = Referencias(id_pessoa_cod_fk=person_registred_id,
+                                                situacao=1, tipo=reference['referenceType'], nome=reference['referenceName'],
+                                                tel=reference['referencePhone'], endereco=reference['referenceAdress'], data_criacao=timezone.now())
+            references_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar os dados da referência')
+
+    """  
+    REGISTER BANK
+    """
+    banking_references_array = request.data.get('bankingReferences')
+    for banking_reference in banking_references_array:
+        try:
+            banking_reference_registred = Refbanco(id_pessoa_cod_fk=person_registred_id, id_bancos_fk=banking_reference['idBanking'], situacao=1,
+                                                   agencia=banking_reference['agency'], conta=banking_reference['account'],
+                                                   abertura=banking_reference['opening'], tipo=banking_reference['type'], data_criacao=timezone.now())
+            banking_reference_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar os dados de refenrências bancárias')
 
     return Response({'detail': 'Cadastro feito com sucesso'})
 
