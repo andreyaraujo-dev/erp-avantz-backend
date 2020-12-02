@@ -1,9 +1,13 @@
 from django.urls import path, include
-from .views import index, delete, store_person_physical
+from .views import index, delete, store_person_physical, details_physical_person, find_physical_persons, find_legal_persons
 
 urlpatterns = [
     path('', index, name='list_all_persons'),
     path('delete/<int:id_person>', delete, name='delete_person'),
     path('physical/create', store_person_physical,
          name='create_person_physical'),
+    path('physical/details/<int:id_person>',
+         details_physical_person, name='details_person'),
+    path('physical', find_physical_persons, name='find_physical_persons'),
+    path('legal', find_legal_persons, name='find_legal_persons'),
 ]

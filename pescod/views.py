@@ -3,19 +3,27 @@ from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework import status
 from datetime import datetime
 from django.utils import timezone
+from django.db import transaction
 
 from users.authentication import SafeJWTAuthentication
 from .serializers import PescodSerializer
 from .models import Pescod
 from pessoa_fisica.models import Pesfis
+from pessoa_fisica.serializers import PessoaFisicaSerializers
 from pessoa_juridica.models import Pesjur
 from enderecos.models import Enderecos
+from enderecos.serializers import EnderecosSerializers
 from telefones.models import Telefones
+from telefones.serializers import TelefoneSerializers
 from emails.models import Mails
+from emails.serializers import EmailSerializers
 from referencias.models import Referencias
+from referencias.serializers import ReferenciasSerializers
 from ref_bancarias.models import Refbanco
+from ref_bancarias.serializers import RefBancoSerializers
 
 
 @api_view(['GET'])
@@ -26,7 +34,37 @@ def index(request):
     id_institution = request.user.instit_id
     try:
         persons = Pescod.objects.filter(
-            id_instituicao_fk=id_institution, sit=1)
+            id_instituicao_fk=id_institution, sit=2)
+        persons_serialized = PescodSerializer(persons, many=True)
+        return Response(persons_serialized.data)
+    except:
+        raise exceptions.APIException
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def find_physical_persons(request):
+    id_institution = request.user.instit_id
+    try:
+        persons = Pescod.objects.filter(
+            id_instituicao_fk=id_institution, sit=2, tipo=1)
+        persons_serialized = PescodSerializer(persons, many=True)
+        return Response(persons_serialized.data)
+    except:
+        raise exceptions.APIException
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def find_legal_persons(request):
+    id_institution = request.user.instit_id
+    try:
+        persons = Pescod.objects.filter(
+            id_instituicao_fk=id_institution, sit=2, tipo=2)
         persons_serialized = PescodSerializer(persons, many=True)
         return Response(persons_serialized.data)
     except:
@@ -37,6 +75,7 @@ def index(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
+@transaction.atomic
 def store_person_physical(request):
     id_institution = request.user.instit_id
     cpf = request.data.get('personCPF')
@@ -46,21 +85,20 @@ def store_person_physical(request):
     person = Pescod.objects.filter(
         id_instituicao_fk=id_institution, cpfcnpj=cpf, sit=1)
     if person:
-        return Response({'detail': 'Já existe um registro ativo com este CPF. Por favor revise os dados.'})
+        return Response({'detail': 'Já existe um registro ativo com este CPF. Por favor revise os dados.'}, status=status.HTTP_400_BAD_REQUEST)
 
     """  
     REGISTER PESCOD
     """
-    type_person = request.data.get('personType')
     provider = request.data.get('personIsProvider')
     name = request.data.get('personName')
     person_photo = request.data.get('personPhoto')
     person_limit = request.data.get('personLimit')
     person_balance = request.data.get('personBalance')
 
-    person = Pescod(id_instituicao_fk=id_institution, tipo=type_person, sit=1, forn=provider, cpfcnpj=cpf,
-                    nomeorrazaosocial=name, foto=person_photo, img_bites=0, limite=person_limit, saldo=person_balance, data_criacao=timezone.now())
     try:
+        person = Pescod(id_instituicao_fk=id_institution, tipo=1, sit=1, forn=provider, cpfcnpj=cpf,
+                        nomeorrazaosocial=name, foto=person_photo, img_bites=0, limite=person_limit, saldo=person_balance, data_criacao=timezone.now())
         person.save()
     except:
         raise exceptions.APIException(
@@ -199,3 +237,78 @@ def delete(request, id_person):
         return Response({'detail': 'Apagado com sucesso!'})
     except:
         raise exceptions.APIException('Não foi possível deletar o registro')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def details_physical_person(request, id_person):
+    # LIST OF THE POSSIBLE SEARCH ERRORS IN THE DATA OF THE PERSON SEARCHED
+    details = []
+
+    try:
+        person = Pescod.objects.get(pk=id_person)
+        person_serialized = PescodSerializer(person)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível pesquisar os dados do registro.')
+
+    # FIND PHYSICAL PERSON DATA
+    person_physical = Pesfis.objects.get(id_pessoa_cod_fk=id_person)
+    if not person_physical:
+        details.append(
+            'Não foi possível encontrar os dados deste registro.')
+    person_physical_serialized = PessoaFisicaSerializers(
+        person_physical)
+
+    # FIND ADRESS DATA THIS PERSON
+    person_adress = Enderecos.objects.filter(id_pessoa_cod_fk=id_person)
+    if not person_adress:
+        details.append(
+            'Não foi possível encontrar os dados de endereço deste registro.')
+    person_adress_serialized = EnderecosSerializers(
+        person_adress, many=True)
+
+    # FIND PHONE DATA THIS PERSON
+    person_phone = Telefones.objects.filter(id_pessoa_cod_fk=id_person)
+    if not person_phone:
+        details.append(
+            'Não foi possível encontrar os dados de contato deste registro.')
+    person_phone_serialized = TelefoneSerializers(person_phone, many=True)
+
+    # FIND MAIL DATA THIS PERSON
+    person_mail = Mails.objects.filter(id_pessoa_cod_fk=id_person)
+    if not person_physical:
+        details.append(
+            'Não foi possível encontrar os dados de e-mail deste registro.')
+    person_mail_serialized = EmailSerializers(person_mail, many=True)
+
+    # FIND REFERENCES DATA THIS PERSON
+    person_references = Referencias.objects.filter(
+        id_pessoa_cod_fk=id_person)
+    if not person_references:
+        details.append(
+            'Não foi possível encontrar os dados de referência deste registro.')
+    person_references_serialized = ReferenciasSerializers(
+        person_references, many=True)
+
+    # FIND BANKING REFERENCES DATA THIS PERSON
+    banking_references = Refbanco.objects.filter(
+        id_pessoa_cod_fk=id_person)
+    if not banking_references:
+        details.append(
+            'Não foi possível encontrar os dados bancários deste registro.')
+    banking_references_serialized = RefBancoSerializers(
+        banking_references, many=True)
+
+    return Response({
+        'person': person_serialized.data,
+        'personPhysical': person_physical_serialized.data,
+        'personAdress': person_adress_serialized.data,
+        'personPhone': person_phone_serialized.data,
+        'personMail': person_mail_serialized.data,
+        'personReferences': person_references_serialized.data,
+        'bankingReferences': banking_references_serialized.data,
+        'details': details
+    })

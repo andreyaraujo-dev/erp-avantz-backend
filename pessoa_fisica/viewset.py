@@ -3,6 +3,6 @@ from .models import Pesfis
 from .serializers import PessoaFisicaSerializers
 
 
-class EmailViewSet(viewsets.ModelViewSet):
+class PessoaFisicaViewSet(viewsets.ModelViewSet):
     queryset = Pesfis.objects.all()
     serializer_class = PessoaFisicaSerializers
