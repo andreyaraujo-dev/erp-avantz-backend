@@ -19,15 +19,16 @@ from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
-from users import urls as users_urls
-from permissions import urls as permissions_urls
-from users_groups import urls as user_groups_urls
-from pescod import urls as pescod_urls
+from contasmv import urls as contasmv_urls
 from emails import urls as mails_urls
 from enderecos import urls as adresses_urls
+from permissions import urls as permissions_urls
+from pescod import urls as pescod_urls
 from ref_bancarias import urls as banking_ref_persons_urls
 from referencias import urls as person_references_urls
 from telefones import urls as telefones_urls
+from users import urls as users_urls
+from users_groups import urls as user_groups_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -38,18 +39,19 @@ from telefones import urls as telefones_urls
 
 urlpatterns = [
     # path('', include(router.urls)),
+    path('account_movement/', include(contasmv_urls)),
     path('admin/', admin.site.urls),
+    path('adresses/', include(adresses_urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('users/', include(users_urls)),
-    # path('imagem/', include(imagem_usuario_urls)),
+    path('banking_references/', include(banking_ref_persons_urls)),
     path('groups/', include(user_groups_urls)),
+    # path('imagem/', include(imagem_usuario_urls)),
+    path('mails/', include(mails_urls)),
     path('permissions/', include(permissions_urls)),
     path('persons/', include(pescod_urls)),
-    path('mails/', include(mails_urls)),
-    path('adresses/', include(adresses_urls)),
-    path('banking_references/', include(banking_ref_persons_urls)),
     path('persons_references/', include(person_references_urls)),
     path('phones/', include(telefones_urls)),
+    path('users/', include(users_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls

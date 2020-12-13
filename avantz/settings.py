@@ -32,7 +32,6 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['localhost', 'https://gcomdev.herokuapp.com',
                  'http://dev-gcom.avantz.com.br', ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,18 +49,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # project apps
-    'users.apps.UsersConfig',
-    'instituicao.apps.InstituicaoConfig',
-    'users_groups.apps.UsersGroupsConfig',
-    'pescod.apps.PescodConfig',
-    'permissions.apps.PermissionsConfig',
+    'contasmv.apps.ContasMvConfig',
     'emails.apps.EmailsConfig',
     'enderecos.apps.EnderecosConfig',
+    'instituicao.apps.InstituicaoConfig',
+    'pescod.apps.PescodConfig',
     'pessoa_fisica.apps.PessoaFisicaConfig',
     'pessoa_juridica.apps.PessoaJuridicaConfig',
-    'referencias.apps.ReferenciasConfig',
+    'permissions.apps.PermissionsConfig',
     'telefones.apps.TelefonesConfig',
-    'ref_bancarias.apps.RefBancariasConfig'
+    'ref_bancarias.apps.RefBancariasConfig',
+    'referencias.apps.ReferenciasConfig',
+    'users.apps.UsersConfig',
+    'users_groups.apps.UsersGroupsConfig'
 ]
 
 MIDDLEWARE = [
@@ -94,7 +94,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'avantz.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -226,7 +225,6 @@ USE_TZ = True
 # user model
 AUTH_USER_MODEL = 'users.Users'
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -235,11 +233,10 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'templates/static'),)
 # static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
 
-del DATABASES['default']['OPTIONS']['sslmode']
+#del DATABASES['default']['OPTIONS']['sslmode']

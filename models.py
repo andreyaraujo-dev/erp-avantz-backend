@@ -541,22 +541,7 @@ class Contasfin(models.Model):
         unique_together = (('instit', 'tipo', 'cedagenc', 'cedconta'),)
 
 
-class Contasmv(models.Model):
-    id = models.IntegerField(primary_key=True)
-    instit = models.PositiveIntegerField()
-    idctfin = models.PositiveIntegerField()
-    idsecao = models.PositiveIntegerField()
-    tipo = models.PositiveIntegerField()
-    descr = models.CharField(max_length=50, blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    dat = models.DateTimeField(blank=True, null=True)
-    idorigem = models.PositiveIntegerField()
-    usuario = models.PositiveIntegerField()
-    mcx = models.PositiveIntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'contasmv'
 
 
 class Contaspg(models.Model):

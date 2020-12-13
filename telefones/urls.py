@@ -5,5 +5,5 @@ urlpatterns = [
     path('<int:id_person>', index, name='get_all_phones'),
     path('create', store, name='register_phone'),
     path('update', update, name='update_phone'),
-    path('delete/<int:id_phone>', delete, name='delte_phone'),
+    path('delete/<int:id_phone>', delete, name='delete_phone'),
 ]
