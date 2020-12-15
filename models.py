@@ -501,45 +501,6 @@ class Configs(models.Model):
         db_table = 'configs'
 
 
-class Contasfin(models.Model):
-    instit = models.IntegerField()
-    sit = models.IntegerField()
-    tipo = models.IntegerField(blank=True, null=True)
-    idsecao = models.IntegerField()
-    nome = models.CharField(max_length=30)
-    dtabr = models.DateTimeField(blank=True, null=True)
-    saldoini = models.DecimalField(max_digits=10, decimal_places=2)
-    cobr = models.IntegerField()
-    idbco = models.IntegerField()
-    conv = models.CharField(max_length=20, blank=True, null=True)
-    convdig = models.CharField(max_length=1, blank=True, null=True)
-    cedente = models.CharField(max_length=40, blank=True, null=True)
-    cedend = models.CharField(max_length=60, blank=True, null=True)
-    cpfcnpj = models.CharField(max_length=18, blank=True, null=True)
-    cedcod = models.CharField(max_length=8, blank=True, null=True)
-    cedagenc = models.CharField(max_length=4, blank=True, null=True)
-    cedagd = models.CharField(max_length=1, blank=True, null=True)
-    cedconta = models.CharField(max_length=10, blank=True, null=True)
-    cedctdig = models.CharField(max_length=1, blank=True, null=True)
-    oper = models.CharField(max_length=3, blank=True, null=True)
-    carteira = models.CharField(max_length=2, blank=True, null=True)
-    variacao = models.CharField(max_length=2, blank=True, null=True)
-    idbolesp = models.PositiveIntegerField()
-    instr1 = models.CharField(max_length=80, blank=True, null=True)
-    instr2 = models.CharField(max_length=80, blank=True, null=True)
-    instr3 = models.CharField(max_length=80, blank=True, null=True)
-    idmoeda = models.PositiveIntegerField()
-    taxa = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True)
-    gerente = models.CharField(max_length=25, blank=True, null=True)
-    tel = models.CharField(max_length=14, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'contasfin'
-        unique_together = (('instit', 'tipo', 'cedagenc', 'cedconta'),)
-
 
 
 
@@ -875,46 +836,6 @@ class GcomBtns(models.Model):
         managed = False
         db_table = 'gcom_btns'
 
-
-class GcomMenu(models.Model):
-    # Field name made lowercase.
-    id = models.IntegerField(db_column='Id', primary_key=True)
-    ativo = models.PositiveIntegerField()
-    ordem = models.PositiveIntegerField()
-    tipo = models.PositiveIntegerField()
-    rotulo = models.CharField(max_length=50, blank=True, null=True)
-    nome = models.CharField(max_length=10, blank=True, null=True)
-    action = models.CharField(max_length=40, blank=True, null=True)
-    img = models.CharField(max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'gcom_menu'
-
-
-class Imprfisc(models.Model):
-    # Field name made lowercase.
-    id = models.IntegerField(db_column='Id', primary_key=True)
-    loja = models.PositiveIntegerField()
-    nome = models.CharField(max_length=20)
-    monitor = models.CharField(max_length=15)
-    status = models.PositiveIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'imprfisc'
-
-
-class Imprfiscfila(models.Model):
-    # Field name made lowercase.
-    id = models.IntegerField(db_column='Id', primary_key=True)
-    fila = models.IntegerField()
-    data = models.DateTimeField()
-    texto = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'imprfiscfila'
 
 
 class Infpatrim(models.Model):
@@ -1324,41 +1245,6 @@ class Orcamentos(models.Model):
         managed = False
         db_table = 'orcamentos'
         unique_together = (('instit', 'codorc'),)
-
-
-class Pedidos(models.Model):
-    id = models.PositiveIntegerField(primary_key=True)
-    sit = models.PositiveIntegerField()
-    instit = models.PositiveIntegerField()
-    codped = models.PositiveIntegerField()
-    dat = models.DateTimeField()
-    tven = models.PositiveIntegerField()
-    tcli = models.PositiveIntegerField()
-    ccli = models.PositiveIntegerField()
-    cli = models.CharField(max_length=50)
-    tend = models.PositiveIntegerField()
-    end = models.CharField(max_length=40, blank=True, null=True)
-    endnum = models.CharField(max_length=6, blank=True, null=True)
-    endcompl = models.CharField(max_length=30, blank=True, null=True)
-    bairro = models.CharField(max_length=30, blank=True, null=True)
-    cidade = models.CharField(max_length=35, blank=True, null=True)
-    uf = models.PositiveIntegerField()
-    cep = models.CharField(max_length=10, blank=True, null=True)
-    tel1 = models.CharField(max_length=14, blank=True, null=True)
-    tel2 = models.CharField(max_length=13, blank=True, null=True)
-    ptref = models.CharField(max_length=30, blank=True, null=True)
-    tot = models.DecimalField(max_digits=10, decimal_places=2)
-    vacr = models.DecimalField(max_digits=10, decimal_places=2)
-    vdesc = models.DecimalField(max_digits=10, decimal_places=2)
-    totpg = models.DecimalField(max_digits=10, decimal_places=2)
-    codusu = models.PositiveIntegerField()
-    msg = models.CharField(max_length=30, blank=True, null=True)
-    msg2 = models.CharField(max_length=200, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'pedidos'
-        unique_together = (('instit', 'codped'),)
 
 
 class Permissao(models.Model):

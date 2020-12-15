@@ -49,10 +49,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # project apps
+    'contasfin.apps.ContasFinConfig',
     'contasmv.apps.ContasMvConfig',
     'emails.apps.EmailsConfig',
     'enderecos.apps.EnderecosConfig',
     'instituicao.apps.InstituicaoConfig',
+    'itenspedido.apps.ItPedConfig',
+    'pedidos.apps.PedidosConfig',
     'pescod.apps.PescodConfig',
     'pessoa_fisica.apps.PessoaFisicaConfig',
     'pessoa_juridica.apps.PessoaJuridicaConfig',
