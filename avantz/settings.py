@@ -162,6 +162,14 @@ CORS_ALLOWED_ORIGINS = [
     'https://gcomdev.herokuapp.com',
     'http://dev-gcom.avantz.com.br',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'localhost:3000',
+    'localhost:8000',
+    'gcomdev.herokuapp.com',
+    'dev-gcom.avantz.com.br',
+]
+
 # List of HTTP verbs
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -178,14 +186,6 @@ CORS_ALLOW_METHODS = [
 #     # other allowed hosts...
 # ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'https://gcomdev.herokuapp.com',
-    'http://dev-gcom.avantz.com.br',
-    # other allowed origins...
-]
-
 CORS_ALLOW_HEADERS = [
     'authorization',
     'content-type',
@@ -193,6 +193,11 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'withcredentials'
 ]
+
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # Email Settings
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
