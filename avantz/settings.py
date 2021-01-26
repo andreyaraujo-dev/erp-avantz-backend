@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'pessoa_juridica.apps.PessoaJuridicaConfig',
     'referencias.apps.ReferenciasConfig',
     'telefones.apps.TelefonesConfig',
-    'ref_bancarias.apps.RefBancariasConfig'
+    'ref_bancarias.apps.RefBancariasConfig',
+    'bancos.apps.BancosConfig'
 ]
 
 MIDDLEWARE = [
@@ -196,8 +197,8 @@ CORS_ALLOW_HEADERS = [
 
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
 # Email Settings
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

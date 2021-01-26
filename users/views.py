@@ -69,9 +69,9 @@ def login(request):
     refresh_token = generate_refresh_token(user)
 
     response.set_cookie(key='refreshtoken',
-                        value=refresh_token, path='/', max_age=3600, samesite='Lax', httponly=True)
-    response.set_cookie(key='csrftoken', value=access_token, path='/', max_age=3600,
-                        samesite='Lax', httponly=True)
+                        value=refresh_token, path='/', max_age=3600, samesite='None', secure=True, httponly=True)
+    # response.set_cookie(key='csrftoken', value=access_token, path='/', max_age=3600,
+    #                     samesite='None', secure=True, httponly=True)
     response.data = {
         'access_token': access_token,
         'user': serialized_user,

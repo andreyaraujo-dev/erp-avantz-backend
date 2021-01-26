@@ -28,6 +28,7 @@ from enderecos import urls as adresses_urls
 from ref_bancarias import urls as banking_ref_persons_urls
 from referencias import urls as person_references_urls
 from telefones import urls as telefones_urls
+from bancos import urls as bancos_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -50,6 +51,7 @@ urlpatterns = [
     path('banking_references/', include(banking_ref_persons_urls)),
     path('persons_references/', include(person_references_urls)),
     path('phones/', include(telefones_urls)),
+    path('banking/', include(bancos_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls
