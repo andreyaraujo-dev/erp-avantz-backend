@@ -14,3 +14,7 @@ class Bancos(models.Model):
     class Meta:
         managed = False
         db_table = 'bancos'
+        ordering = ['banco']
+
+    def __str__(self):
+        return self.banco
