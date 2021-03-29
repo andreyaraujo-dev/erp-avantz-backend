@@ -47,7 +47,7 @@ urlpatterns = [
     path('permissions/', include(permissions_urls)),
     path('persons/', include(pescod_urls)),
     path('mails/', include(mails_urls)),
-    path('adresses/', include(adresses_urls)),
+    path('addresses/', include(adresses_urls)),
     path('banking_references/', include(banking_ref_persons_urls)),
     path('persons_references/', include(person_references_urls)),
     path('phones/', include(telefones_urls)),

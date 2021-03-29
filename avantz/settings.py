@@ -139,7 +139,9 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'users.authentication.SafeJWTAuthentication',
+        'users.authentication.SafeJWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication' ,
+        # 'rest_framework.authentication.BasicAuthentication' ,
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
@@ -188,17 +190,25 @@ CORS_ALLOW_METHODS = [
 # ]
 
 CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
     'authorization',
     'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
     'refresh_token',
-    'x-csrftoken',
-    'withcredentials'
+    'X-CSRFToken',
+    'withcredentials',
+    'x-requested-with',
 ]
 
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
+# CSRF_HEADER_NAME = 'X_CSRFToken'
+# CSRF_COOKIE_NAME = 'csrftoken'
 
 # Email Settings
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

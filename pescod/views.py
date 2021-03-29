@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
@@ -318,7 +319,7 @@ def details_physical_person(request, id_person):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
 @transaction.atomic
 def store_legal_person(request):
     id_institution = request.user.instit_id
@@ -380,7 +381,7 @@ def store_legal_person(request):
         try:
             adress_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=person_registred_id, endtip=1, rua=adress['street'],
                                          numero=adress['numberHouse'], complemento=adress['complement'], bairro=adress['neighborhood'],
-                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['stateAdress'], data_criacao=timezone.now())
+                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['state'], data_criacao=timezone.now())
             adress_registred.save()
         except:
             raise exceptions.APIException(
@@ -476,7 +477,8 @@ def details_legal_person(request, id_person):
         person_adress, many=True)
 
     # FIND PHONE DATA THIS PERSON
-    person_phone = Telefones.objects.filter(id_pessoa_cod_fk=id_person)
+    person_phone = Telefones.objects.filter(
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_phone:
         details.append(
             'Não foi possível encontrar os dados de contato deste registro.')
