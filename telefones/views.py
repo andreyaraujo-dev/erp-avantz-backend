@@ -44,7 +44,7 @@ def store(request):
                 'Não foi possível salvar os dados de contato')
 
     phones = Telefones.objects.filter(
-        id_pessoa_cod_fk=phone['idPerson'], situacao=1)
+        id_pessoa_cod_fk=phones_array[0]['idPerson'], situacao=1)
     phones_serialized = TelefoneSerializers(phones, many=True)
 
     return Response(phones_serialized.data)

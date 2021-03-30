@@ -31,13 +31,13 @@ def index(request, id_person):
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
 def store(request):
-    adresses_array = request.data.get('adresses')
+    addresses_array = request.data.get('adresses')
 
-    for adress in adresses_array:
+    for adress in addresses_array:
         try:
             if adress['origin'] == 1:
                 adress_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=adress['idPerson'], endtip=1, rua=adress['street'], numero=adress['numberHouse'],
-                                             complemento=adress['complement'], bairro=adress['neighborhood'], cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['stateAdress'])
+                                             complemento=adress['complement'], bairro=adress['neighborhood'], cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['state'])
                 adress_registred.save()
             elif adress['origin'] == 2:
                 adress_registred = Enderecos(situacao=1, origem=2, id_pessoa_cod_fk=adress['idPerson'], endtip=1, rua=adress['street'], numero=adress['numberHouse'],
@@ -47,7 +47,10 @@ def store(request):
             raise exceptions.APIException(
                 'Não foi possível salvar todos os dados de endereço')
 
-    return Response({'detail': 'Todos os dados de endereço foram salvos'})
+    addresses = Enderecos.objects.filter(
+        id_pessoa_cod_fk=addresses_array[0]['idPerson'], situacao=1)
+    addresses_serialized = EnderecosSerializers(addresses, many=True)
+    return Response(addresses_serialized.data)
 
 
 @api_view(['PUT'])

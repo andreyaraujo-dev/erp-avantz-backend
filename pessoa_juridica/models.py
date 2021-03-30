@@ -21,3 +21,7 @@ class Pesjur(models.Model):
     class Meta:
         managed = False
         db_table = 'pesjur'
+        ordering = ['fantasia']
+
+    def __str__(self):
+        return self.fantasia
