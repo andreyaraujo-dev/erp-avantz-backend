@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'emails.apps.EmailsConfig',
     'enderecos.apps.EnderecosConfig',
     'instituicao.apps.InstituicaoConfig',
-    'itenspedido.apps.ItPedConfig',
+    'it_ped.apps.ItPedConfig',
     'pedidos.apps.PedidosConfig',
     'pescod.apps.PescodConfig',
     'pessoa_fisica.apps.PessoaFisicaConfig',
@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     'ref_bancarias.apps.RefBancariasConfig',
     'referencias.apps.ReferenciasConfig',
     'users.apps.UsersConfig',
-    'users_groups.apps.UsersGroupsConfig'
-    'bancos.apps.BancosConfig'
+    'bancos.apps.BancosConfig',
+    'users_groups.apps.UsersGroupsConfig',
 ]
 
 MIDDLEWARE = [

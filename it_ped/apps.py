@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class PedidosConfig(AppConfig):
+class ItPedConfig(AppConfig):
     name = 'it_ped'
