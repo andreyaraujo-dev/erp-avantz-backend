@@ -41,7 +41,11 @@ def store(request):
             raise exceptions.APIException(
                 'Não foi possível salvar os dados de email')
 
-    return Response({'Todos os dados de email foram salvos'})
+    mails = Mails.objects.filter(
+        id_pessoa_cod_fk=mails_array[0]['idPerson'], situacao=1)
+    mails_serialized = EmailSerializers(mails, many=True)
+
+    return Response(mails_serialized.data)
 
 
 @api_view(['PUT'])

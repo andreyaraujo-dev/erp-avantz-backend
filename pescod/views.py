@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
@@ -7,6 +8,8 @@ from rest_framework import status
 from datetime import datetime
 from django.utils import timezone
 from django.db import transaction
+
+import sys
 
 from users.authentication import SafeJWTAuthentication
 from .serializers import PescodSerializer
@@ -229,15 +232,33 @@ def store_person_physical(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
+@transaction.atomic
 def delete(request, id_person):
+    id_institution = request.user.instit_id
+
+    person = Pescod.objects.filter(id_pessoa_cod=id_person, sit=2).first()
+    if not person:
+        return Response({'detail': 'Registro não encontrado, tente novamente.'}, status=status.HTTP_404_NOT_FOUND)
+
     try:
-        person = Pescod.objects.get(pk=id_person)
         person.sit = 0
         person.save()
-        return Response({'detail': 'Apagado com sucesso!'})
+
+        if person.tipo == 1:
+            persons = Pescod.objects.filter(
+                id_instituicao_fk=id_institution, sit=2, tipo=1)
+            persons_serialized = PescodSerializer(persons, many=True)
+            return Response(persons_serialized.data)
+
+        if person.tipo == 2:
+            persons = Pescod.objects.filter(
+                id_instituicao_fk=id_institution, sit=2, tipo=2)
+            persons_serialized = PescodSerializer(persons, many=True)
+            return Response(persons_serialized.data)
     except:
-        raise exceptions.APIException('Não foi possível deletar o registro')
+        raise exceptions.APIException(
+            'Não foi possível deletar o registro, tente novamente.', code=500)
 
 
 @api_view(['GET'])
@@ -318,7 +339,7 @@ def details_physical_person(request, id_person):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
 @transaction.atomic
 def store_legal_person(request):
     id_institution = request.user.instit_id
@@ -380,7 +401,7 @@ def store_legal_person(request):
         try:
             adress_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=person_registred_id, endtip=1, rua=adress['street'],
                                          numero=adress['numberHouse'], complemento=adress['complement'], bairro=adress['neighborhood'],
-                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['stateAdress'], data_criacao=timezone.now())
+                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['state'], data_criacao=timezone.now())
             adress_registred.save()
         except:
             raise exceptions.APIException(
@@ -468,7 +489,8 @@ def details_legal_person(request, id_person):
         legal_person)
 
     # FIND ADRESS DATA THIS PERSON
-    person_adress = Enderecos.objects.filter(id_pessoa_cod_fk=id_person)
+    person_adress = Enderecos.objects.filter(
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_adress:
         details.append(
             'Não foi possível encontrar os dados de endereço deste registro.')
@@ -476,14 +498,15 @@ def details_legal_person(request, id_person):
         person_adress, many=True)
 
     # FIND PHONE DATA THIS PERSON
-    person_phone = Telefones.objects.filter(id_pessoa_cod_fk=id_person)
+    person_phone = Telefones.objects.filter(
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_phone:
         details.append(
             'Não foi possível encontrar os dados de contato deste registro.')
     person_phone_serialized = TelefoneSerializers(person_phone, many=True)
 
     # FIND MAIL DATA THIS PERSON
-    person_mail = Mails.objects.filter(id_pessoa_cod_fk=id_person)
+    person_mail = Mails.objects.filter(id_pessoa_cod_fk=id_person, situacao=1)
     if not person_mail:
         details.append(
             'Não foi possível encontrar os dados de e-mail deste registro.')
@@ -491,7 +514,7 @@ def details_legal_person(request, id_person):
 
     # FIND REFERENCES DATA THIS PERSON
     person_references = Referencias.objects.filter(
-        id_pessoa_cod_fk=id_person)
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_references:
         details.append(
             'Não foi possível encontrar os dados de referência deste registro.')
@@ -500,7 +523,7 @@ def details_legal_person(request, id_person):
 
     # FIND BANKING REFERENCES DATA THIS PERSON
     banking_references = Refbanco.objects.filter(
-        id_pessoa_cod_fk=id_person)
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not banking_references:
         details.append(
             'Não foi possível encontrar os dados bancários deste registro.')
@@ -509,7 +532,7 @@ def details_legal_person(request, id_person):
 
     return Response({
         'person': person_serialized.data,
-        'personPhysical': legal_person_serialized.data,
+        'legalPerson': legal_person_serialized.data,
         'personAdress': person_adress_serialized.data,
         'personPhone': person_phone_serialized.data,
         'personMail': person_mail_serialized.data,
@@ -517,3 +540,307 @@ def details_legal_person(request, id_person):
         'bankingReferences': banking_references_serialized.data,
         'details': details
     })
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+@transaction.atomic
+def edit_legal_person(request, id_person):
+    id_institution = request.user.instit_id
+
+    """  
+    EDIT PESCOD
+    """
+    """  
+    FIND PERSON ON DATABASE. IF NOT EXISTS, NO EDIT AND RETURN
+    """
+    try:
+        person = Pescod.objects.get(pk=id_person)
+    except:
+        raise exceptions.NotFound(
+            'Não existe nenhum registro com este CNPJ. Por favor revise os dados.', code=404)
+
+    try:
+        person.forn = request.data.get('forn')
+        person.cpfcnpj = request.data.get('cpfcnpj')
+        person.nomeorrazaosocial = request.data.get('nomeorrazaosocial')
+        person.foto = request.data.get('foto')
+        person.limite = request.data.get('limite')
+        person.saldo = request.data.get('saldo')
+
+        person.save()
+    except:
+        raise exceptions.APIException(
+            'Não foi possível editar o registro da pessoa. Verifique os dados inseridos.')
+
+    """  
+    UPDATE LEGAL PERSON
+    """
+    try:
+        legal_person = Pesjur.objects.filter(
+            id_pessoa_cod_fk=id_person).first()
+        legal_person.fantasia = request.data.get('fantasia')
+        legal_person.ramo = request.data.get('ramo')
+        legal_person.tipo_empresa = request.data.get('tipo_empresa')
+        legal_person.capsocial = request.data.get('capsocial')
+        legal_person.faturamento = request.data.get('faturamento')
+        legal_person.tribut = request.data.get('tribut')
+        legal_person.contato = request.data.get('contato')
+        legal_person.data_abertura = request.data.get('data_abertura')
+        legal_person.inscricao_estadual = request.data.get(
+            'inscricao_estadual')
+        legal_person.inscricao_municipal = request.data.get(
+            'inscricao_municipal')
+
+        legal_person.save()
+    except:
+        raise exceptions.APIException(
+            'Não foi possível editar os dados de pessoa jurídica')
+
+    """ 
+    UPDATE ADRESS
+    """
+    addresses_array = request.data.get('adresses')
+    for address in addresses_array:
+        try:
+            address_registred = Enderecos.objects.get(
+                pk=address['id_enderecos'])
+            address_registred.rua = address['rua']
+            address_registred.numero = address['numero']
+            address_registred.complemento = address['complemento']
+            address_registred.bairro = address['bairro']
+            address_registred.cep = address['cep']
+            address_registred.city = address['cidade']
+            address_registred.estado_endereco = address['estado_endereco']
+            address_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar todos os dados de endereço')
+
+    """  
+    UPDATE PHONE
+    """
+    phones_array = request.data.get('phones')
+    for phone in phones_array:
+        try:
+            phone_registered = Telefones.objects.get(pk=phone['id_telefone'])
+            phone_registered.tel = phone['tel']
+            phone_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados de contato')
+
+    """ 
+    UPDATE MAIL    
+    """
+    mails_array = request.data.get('mails')
+    for mail in mails_array:
+        try:
+            mail_registered = Mails.objects.get(pk=mail['id_mails'])
+            mail_registered.email = mail['email']
+            mail_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível salvar os dados de email')
+
+    """  
+    UPDATE REFERENCES
+    """
+    references_array = request.data.get('personReferences')
+    for reference in references_array:
+        try:
+            reference_registered = Referencias.objects.get(
+                pk=reference['id_referencia'])
+            reference_registered.tipo = reference['tipo']
+            reference_registered.nome = reference['nome']
+            reference_registered.tel = reference['tel']
+            reference_registered.endereco = reference['endereco']
+            reference_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados da referência')
+
+    """  
+    UPDATE BANK
+    """
+    banking_references_array = request.data.get('bankingReferences')
+    for banking_reference in banking_references_array:
+        try:
+            banking_reference_registred = Refbanco.objects.get(
+                pk=banking_reference['id_banco'])
+            banking_reference_registred.id_bancos_fk = banking_reference['id_bancos_fk']
+            banking_reference_registred.agencia = banking_reference['agencia']
+            banking_reference_registred.conta = banking_reference['conta']
+            banking_reference_registred.abertura = banking_reference['abertura']
+            banking_reference_registred.tipo = banking_reference['tipo']
+            banking_reference_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados de refenrências bancárias')
+
+    return Response({'detail': 'Dados atualizados com sucesso'})
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+@transaction.atomic
+def edit_person_physical(request, id_person):
+    id_institution = request.user.instit_id
+    """  
+    FIND CPF ON DATABASE. IF NO EXISTS, NO UPDATE AND RETURN
+    """
+    person = Pescod.objects.filter(pk=id_person, sit=1)
+    if not person:
+        return Response({'detail': 'Não existe nenhum registro ativo com este CPF. Por favor revise os dados.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    """  
+    UPDATE PESCOD
+    """
+    try:
+        person.cpfcnpj = request.data.get('personCPF')
+        person.forn = request.data.get('personIsProvider')
+        person.cpfcnpj = request.data.get('personCPF')
+        person.nomeorrazaosocial = request.data.get('personName')
+        person.foto = request.data.get('personPhoto')
+        person.limite = request.data.get('personLimit')
+        person.saldo = request.data.get('personBalance')
+        person.save()
+    except:
+        raise exceptions.APIException(
+            'Não foi possível atualizar o registro da pessoa. Verifique os dados inseridos.')
+
+    """  
+    UPDATE PHYSICAL PERSON
+    """
+    try:
+        person_physical = Pesfis.objects.filter(id_pessoa_cod_fk=id_person)
+
+        person_physical.identidade = request.data.get('personIdentity')
+        person_physical.emissor_identidade = request.data.get('issuerIdentity')
+        person_physical.id_municipio_fk = request.data.get(
+            'personMunicipality')
+        person_physical.id_uf_municipio_fk = request.data.get('personUF')
+        person_physical.data_de_nascimento = request.data.get('personBirth')
+        person_physical.tratam = request.data.get('personTreatment')
+        person_physical.apelido = request.data.get('personNickname')
+        person_physical.sexo = request.data.get('personSex')
+        person_physical.pai = request.data.get('personFather')
+        person_physical.mae = request.data.get('personMother')
+        person_physical.profissao = request.data.get('personProfession')
+        person_physical.ctps = request.data.get('ctps')
+        person_physical.salario = request.data.get('personSalary')
+        person_physical.empresa = request.data.get('personCompany')
+        person_physical.resp = request.data.get('companyResponsible')
+        person_physical.cnpj = request.data.get('companyCnpj')
+        person_physical.iest = request.data.get('stateRegistrationCompany')
+        person_physical.imun = request.data.get('municipalRegistrationCompany')
+        person_physical.emprend = request.data.get('companyAdress')
+        person_physical.orendas = request.data.get('otherIncome')
+        person_physical.vrendas = request.data.get('incomeValue')
+        person_physical.irpf = request.data.get('irpf')
+        person_physical.estcivil = request.data.get('maritalStatus')
+        person_physical.depend = request.data.get('personDependents')
+        person_physical.pensao = request.data.get('pension')
+        person_physical.conjugue = request.data.get('spouse')
+        person_physical.cpfconj = request.data.get('spouseCpf')
+        person_physical.profconj = request.data.get('spouseProfession')
+        person_physical.emprconj = request.data.get('spouseCompany')
+        person_physical.rendaconj = request.data.get('spouseIncome')
+        person_physical.telconj = request.data.get('spousePhone')
+        person_physical.mailconj = request.data.get('spouseMail')
+
+        person_physical.save()
+    except:
+        raise exceptions.APIException(
+            'Não foi possível atualizar os dados de pessoa física')
+
+    """ 
+    UPDATE ADRESS
+    """
+    addresses_array = request.data.get('adresses')
+    for address in addresses_array:
+        try:
+            address_registred = Enderecos.objects.get(address['idAddress'])
+            address_registred.rua = address['street']
+            address_registred.numero = address['numberHouse']
+            address_registred.complemento = address['complement']
+            address_registred.bairro = address['neighborhood']
+            address_registred.cep = address['zipCode']
+            address_registred.cidade = address['city']
+            address_registred.estado_endereco = address['stateAdress']
+
+            address_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar todos os dados de endereço')
+
+    """  
+    UPDATE PHONE
+    """
+    phones_array = request.data.get('phones')
+    for phone in phones_array:
+        try:
+            phone_registered = Telefones.objects.get(pk=phone['idPhone'])
+            phone_registered.tel = phone['phoneNumber']
+
+            phone_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados de contato')
+
+    """ 
+    UPDATE MAIL    
+    """
+    mails_array = request.data.get('mails')
+    for mail in mails_array:
+        try:
+            mail_registered = Mails.objects.get(pk=mail['idMail'])
+            mail_registered.email = mail['userMail']
+
+            mail_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados de email')
+
+    """  
+    UPDATE REFERENCES
+    """
+    references_array = request.data.get('personReferences')
+    for reference in references_array:
+        try:
+            references_registered = Referencias.objects.get(
+                pk=reference['idReference'])
+            references_registered.tipo = reference['redferenceType']
+            references_registered.nome = reference['referenceName']
+            references_registered.tel = reference['referencePhone']
+            references_registered.endereco = reference['referenceAdress']
+
+            references_registered.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados da referência')
+
+    """  
+    UPDATE BANK
+    """
+    banking_references_array = request.data.get('bankingReferences')
+    for banking_reference in banking_references_array:
+        try:
+            banking_reference_registred = Refbanco.objects.get(
+                pk=banking_reference['idBankingReference'])
+            banking_reference_registred.id_bancos_fk = banking_reference['idBanking']
+            banking_reference_registred.agencia = banking_reference['agency']
+            banking_reference_registred.conta = banking_reference['account']
+            banking_reference_registred.abertura = banking_reference['opening']
+            banking_reference_registred.tipo = banking_reference['type']
+
+            banking_reference_registred.save()
+        except:
+            raise exceptions.APIException(
+                'Não foi possível atualizar os dados de refenrências bancárias')
+
+    return Response({'detail': 'Atualização feita com sucesso'})

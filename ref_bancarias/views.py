@@ -44,7 +44,11 @@ def store(request):
             raise exceptions.APIException(
                 'Não foi possível salvar os dados de refenrências bancárias')
 
-    return Response({'detail': 'Todos os dados de referências foram salvos'})
+    banking_references = Refbanco.objects.filter(
+        id_pessoa_cod_fk=references_array[0]['idPerson'], situacao=1)
+    banking_references_serialized = RefBancoSerializers(
+        banking_references, many=True)
+    return Response(banking_references_serialized.data)
 
 
 @api_view(['PUT'])

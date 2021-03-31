@@ -43,7 +43,10 @@ def store(request):
             raise exceptions.APIException(
                 'Não foi possível salvar os dados da referência')
 
-    return Response({'detail': 'Todos os dados da referência foram salvos'})
+    references = Referencias.objects.filter(
+        id_pessoa_cod_fk=references_array[0]['idPerson'], situacao=1)
+    references_serialized = ReferenciasSerializers(references, many=True)
+    return Response(references_serialized.data)
 
 
 @api_view(['PUT'])

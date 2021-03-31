@@ -43,7 +43,11 @@ def store(request):
             raise exceptions.APIException(
                 'Não foi possível salvar os dados de contato')
 
-    return Response({'detail': 'Todos os dados de contato foram salvos'})
+    phones = Telefones.objects.filter(
+        id_pessoa_cod_fk=phones_array[0]['idPerson'], situacao=1)
+    phones_serialized = TelefoneSerializers(phones, many=True)
+
+    return Response(phones_serialized.data)
 
 
 @api_view(['PUT'])

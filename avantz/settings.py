@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'referencias.apps.ReferenciasConfig',
     'users.apps.UsersConfig',
     'users_groups.apps.UsersGroupsConfig'
+    'bancos.apps.BancosConfig'
 ]
 
 MIDDLEWARE = [
@@ -140,7 +141,9 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'users.authentication.SafeJWTAuthentication',
+        'users.authentication.SafeJWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication' ,
+        # 'rest_framework.authentication.BasicAuthentication' ,
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
@@ -164,6 +167,14 @@ CORS_ALLOWED_ORIGINS = [
     'https://gcomdev.herokuapp.com',
     'http://dev-gcom.avantz.com.br',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'localhost:3000',
+    'localhost:8000',
+    'gcomdev.herokuapp.com',
+    'dev-gcom.avantz.com.br',
+]
+
 # List of HTTP verbs
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -180,21 +191,26 @@ CORS_ALLOW_METHODS = [
 #     # other allowed hosts...
 # ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'https://gcomdev.herokuapp.com',
-    'http://dev-gcom.avantz.com.br',
-    # other allowed origins...
-]
-
 CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
     'authorization',
     'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
     'refresh_token',
-    'x-csrftoken',
-    'withcredentials'
+    'X-CSRFToken',
+    'withcredentials',
+    'x-requested-with',
 ]
+
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+# CSRF_HEADER_NAME = 'X_CSRFToken'
+# CSRF_COOKIE_NAME = 'csrftoken'
 
 # Email Settings
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
