@@ -30,7 +30,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['localhost', 'https://gcomdev.herokuapp.com',
-                 'http://dev-gcom.avantz.com.br', ]
+                 'http://dev-gcom.avantz.com.br', 'https://gcomdev.vercel.app/']
 
 # Application definition
 
@@ -159,6 +159,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'https://gcomdev.herokuapp.com',
     'http://dev-gcom.avantz.com.br',
+    'https://gcomdev.vercel.app/'
 ]
 # CORS URLS settings
 CORS_ALLOWED_ORIGINS = [
@@ -166,6 +167,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     'https://gcomdev.herokuapp.com',
     'http://dev-gcom.avantz.com.br',
+    'https://gcomdev.vercel.app/'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -173,6 +175,7 @@ CSRF_TRUSTED_ORIGINS = [
     'localhost:8000',
     'gcomdev.herokuapp.com',
     'dev-gcom.avantz.com.br',
+    'gcomdev.vercel.app'
 ]
 
 # List of HTTP verbs
