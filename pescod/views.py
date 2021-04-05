@@ -551,9 +551,6 @@ def edit_legal_person(request, id_person):
     id_institution = request.user.instit_id
 
     """  
-    EDIT PESCOD
-    """
-    """  
     FIND PERSON ON DATABASE. IF NOT EXISTS, NO EDIT AND RETURN
     """
     try:
@@ -562,6 +559,9 @@ def edit_legal_person(request, id_person):
         raise exceptions.NotFound(
             'Não existe nenhum registro com este CNPJ. Por favor revise os dados.', code=404)
 
+    """  
+    EDIT PESCOD
+    """
     try:
         person.forn = request.data.get('forn')
         person.cpfcnpj = request.data.get('cpfcnpj')
