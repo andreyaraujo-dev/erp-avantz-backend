@@ -64,15 +64,24 @@ def find_physical_persons(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
-def find_legal_persons(request):
+def find_legal_persons(request, personName=None):
     id_institution = request.user.instit_id
-    try:
-        persons = Pescod.objects.filter(
-            id_instituicao_fk=id_institution, sit=2, tipo=2)
-        persons_serialized = PescodSerializer(persons, many=True)
-        return Response(persons_serialized.data)
-    except:
-        raise exceptions.APIException
+    if personName == None:
+        try:
+            persons = Pescod.objects.filter(
+                id_instituicao_fk=id_institution, sit=2, tipo=2)
+            persons_serialized = PescodSerializer(persons, many=True)
+            return Response(persons_serialized.data)
+        except:
+            raise exceptions.APIException
+    else:
+        try:
+            persons = Pescod.objects.filter(
+                id_instituicao_fk=id_institution, sit=2, tipo=2, nomeorrazaosocial__contains=personName)
+            persons_serialized = PescodSerializer(persons, many=True)
+            return Response(persons_serialized.data)
+        except:
+            raise exceptions.APIException
 
 
 @api_view(['POST'])
