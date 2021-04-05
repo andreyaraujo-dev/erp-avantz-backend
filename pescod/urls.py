@@ -1,6 +1,6 @@
 from django.urls import path, include, re_path
 from .views import (index, delete, store_person_physical, details_physical_person, find_physical_persons, find_legal_persons,
-                    store_legal_person, details_legal_person, edit_legal_person, edit_person_physical, find_legal_person_by_name)
+                    store_legal_person, details_legal_person, edit_legal_person, edit_person_physical)
 
 urlpatterns = [
     path('', index, name='list_all_persons'),
