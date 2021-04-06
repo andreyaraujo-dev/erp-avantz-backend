@@ -33,6 +33,7 @@ from telefones import urls as telefones_urls
 from users import urls as users_urls
 from users_groups import urls as user_groups_urls
 from bancos import urls as bancos_urls
+from municipios import urls as municipios_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -59,12 +60,12 @@ urlpatterns = [
     path('persons_references/', include(person_references_urls)),
     path('phones/', include(telefones_urls)),
     path('users/', include(users_urls)),
-    path('mails/', include(mails_urls)),
     path('addresses/', include(adresses_urls)),
     path('banking_references/', include(banking_ref_persons_urls)),
     path('persons_references/', include(person_references_urls)),
     path('phones/', include(telefones_urls)),
     path('banking/', include(bancos_urls)),
+    path('counties/', include(municipios_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls

@@ -1,4 +1,4 @@
-from django.urls import path, include, re_path
+from django.urls import path, include
 from .views import (index, delete, store_person_physical, details_physical_person, find_physical_persons, find_legal_persons,
                     store_legal_person, details_legal_person, edit_legal_person, edit_person_physical)
 

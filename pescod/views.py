@@ -275,11 +275,14 @@ def delete(request, id_person):
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
 def details_physical_person(request, id_person):
+    id_institution = request.user.instit_id
+
     # LIST OF THE POSSIBLE SEARCH ERRORS IN THE DATA OF THE PERSON SEARCHED
     details = []
 
     try:
-        person = Pescod.objects.get(pk=id_person)
+        person = Pescod.objects.filter(
+            id_pessoa_cod=id_person, id_instituicao_fk=id_institution, sit=2).get()
         person_serialized = PescodSerializer(person)
     except:
         raise exceptions.APIException(
@@ -294,7 +297,8 @@ def details_physical_person(request, id_person):
         person_physical)
 
     # FIND ADRESS DATA THIS PERSON
-    person_adress = Enderecos.objects.filter(id_pessoa_cod_fk=id_person)
+    person_adress = Enderecos.objects.filter(
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_adress:
         details.append(
             'Não foi possível encontrar os dados de endereço deste registro.')
@@ -302,14 +306,15 @@ def details_physical_person(request, id_person):
         person_adress, many=True)
 
     # FIND PHONE DATA THIS PERSON
-    person_phone = Telefones.objects.filter(id_pessoa_cod_fk=id_person)
+    person_phone = Telefones.objects.filter(
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_phone:
         details.append(
             'Não foi possível encontrar os dados de contato deste registro.')
     person_phone_serialized = TelefoneSerializers(person_phone, many=True)
 
     # FIND MAIL DATA THIS PERSON
-    person_mail = Mails.objects.filter(id_pessoa_cod_fk=id_person)
+    person_mail = Mails.objects.filter(id_pessoa_cod_fk=id_person, situacao=1)
     if not person_physical:
         details.append(
             'Não foi possível encontrar os dados de e-mail deste registro.')
@@ -317,7 +322,7 @@ def details_physical_person(request, id_person):
 
     # FIND REFERENCES DATA THIS PERSON
     person_references = Referencias.objects.filter(
-        id_pessoa_cod_fk=id_person)
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not person_references:
         details.append(
             'Não foi possível encontrar os dados de referência deste registro.')
@@ -326,7 +331,7 @@ def details_physical_person(request, id_person):
 
     # FIND BANKING REFERENCES DATA THIS PERSON
     banking_references = Refbanco.objects.filter(
-        id_pessoa_cod_fk=id_person)
+        id_pessoa_cod_fk=id_person, situacao=1)
     if not banking_references:
         details.append(
             'Não foi possível encontrar os dados bancários deste registro.')
