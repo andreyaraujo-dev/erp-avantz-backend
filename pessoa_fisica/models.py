@@ -42,3 +42,7 @@ class Pesfis(models.Model):
     class Meta:
         managed = False
         db_table = 'pesfis'
+        ordering = ['id_pessoa_fisica']
+
+    def __str__(self):
+        return self.apelido

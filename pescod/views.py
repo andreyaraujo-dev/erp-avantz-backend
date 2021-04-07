@@ -568,7 +568,7 @@ def edit_legal_person(request, id_person):
     FIND PERSON ON DATABASE. IF NOT EXISTS, NO EDIT AND RETURN
     """
     try:
-        person = Pescod.objects.get(pk=id_person)
+        person = Pescod.objects.get(pk=id_person, sit=2)
     except:
         raise exceptions.NotFound(
             'Não existe nenhum registro com este CNPJ. Por favor revise os dados.', code=404)
@@ -700,28 +700,30 @@ def edit_legal_person(request, id_person):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
 @transaction.atomic
 def edit_person_physical(request, id_person):
     id_institution = request.user.instit_id
     """  
     FIND CPF ON DATABASE. IF NO EXISTS, NO UPDATE AND RETURN
     """
-    person = Pescod.objects.filter(pk=id_person, sit=1)
-    if not person:
-        return Response({'detail': 'Não existe nenhum registro ativo com este CPF. Por favor revise os dados.'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        person = Pescod.objects.filter(pk=id_person, sit=2).first()
+    except:
+        raise exceptions.NotFound(
+            'Não existe nenhum registro ativo com este CPF. Por favor revise os dados.', code=404)
 
     """  
     UPDATE PESCOD
     """
     try:
-        person.cpfcnpj = request.data.get('personCPF')
-        person.forn = request.data.get('personIsProvider')
-        person.cpfcnpj = request.data.get('personCPF')
-        person.nomeorrazaosocial = request.data.get('personName')
-        person.foto = request.data.get('personPhoto')
-        person.limite = request.data.get('personLimit')
-        person.saldo = request.data.get('personBalance')
+        person.forn = request.data.get('forn')
+        person.cpfcnpj = request.data.get('cpfcnpj')
+        person.nomeorrazaosocial = request.data.get('nomeorrazaosocial')
+        person.foto = request.data.get('foto')
+        person.limite = request.data.get('limite')
+        person.saldo = request.data.get('saldo')
+
         person.save()
     except:
         raise exceptions.APIException(
@@ -731,41 +733,45 @@ def edit_person_physical(request, id_person):
     UPDATE PHYSICAL PERSON
     """
     try:
-        person_physical = Pesfis.objects.filter(id_pessoa_cod_fk=id_person)
+        person_physical = Pesfis.objects.filter(
+            id_pessoa_cod_fk=id_person).first()
 
-        person_physical.identidade = request.data.get('personIdentity')
-        person_physical.emissor_identidade = request.data.get('issuerIdentity')
+        person_physical.identidade = request.data.get('identidade')
+        person_physical.emissor_identidade = request.data.get(
+            'emissor_identidade')
         person_physical.id_municipio_fk = request.data.get(
-            'personMunicipality')
-        person_physical.id_uf_municipio_fk = request.data.get('personUF')
-        person_physical.data_de_nascimento = request.data.get('personBirth')
-        person_physical.tratam = request.data.get('personTreatment')
-        person_physical.apelido = request.data.get('personNickname')
-        person_physical.sexo = request.data.get('personSex')
-        person_physical.pai = request.data.get('personFather')
-        person_physical.mae = request.data.get('personMother')
-        person_physical.profissao = request.data.get('personProfession')
+            'id_municipio_fk')
+        person_physical.id_uf_municipio_fk = request.data.get(
+            'id_uf_municipio_fk')
+        person_physical.data_de_nascimento = request.data.get(
+            'data_de_nascimento')
+        person_physical.tratam = request.data.get('tratam')
+        person_physical.apelido = request.data.get('apelido')
+        person_physical.sexo = request.data.get('sexo')
+        person_physical.pai = request.data.get('pai')
+        person_physical.mae = request.data.get('mae')
+        person_physical.profissao = request.data.get('profissao')
         person_physical.ctps = request.data.get('ctps')
-        person_physical.salario = request.data.get('personSalary')
-        person_physical.empresa = request.data.get('personCompany')
-        person_physical.resp = request.data.get('companyResponsible')
-        person_physical.cnpj = request.data.get('companyCnpj')
-        person_physical.iest = request.data.get('stateRegistrationCompany')
-        person_physical.imun = request.data.get('municipalRegistrationCompany')
-        person_physical.emprend = request.data.get('companyAdress')
-        person_physical.orendas = request.data.get('otherIncome')
-        person_physical.vrendas = request.data.get('incomeValue')
+        person_physical.salario = request.data.get('salario')
+        person_physical.empresa = request.data.get('empresa')
+        person_physical.resp = request.data.get('resp')
+        person_physical.cnpj = request.data.get('cnpj')
+        person_physical.iest = request.data.get('iest')
+        person_physical.imun = request.data.get('imun')
+        person_physical.emprend = request.data.get('emprend')
+        person_physical.orendas = request.data.get('orendas')
+        person_physical.vrendas = request.data.get('vrendas')
         person_physical.irpf = request.data.get('irpf')
-        person_physical.estcivil = request.data.get('maritalStatus')
-        person_physical.depend = request.data.get('personDependents')
-        person_physical.pensao = request.data.get('pension')
-        person_physical.conjugue = request.data.get('spouse')
-        person_physical.cpfconj = request.data.get('spouseCpf')
-        person_physical.profconj = request.data.get('spouseProfession')
-        person_physical.emprconj = request.data.get('spouseCompany')
-        person_physical.rendaconj = request.data.get('spouseIncome')
-        person_physical.telconj = request.data.get('spousePhone')
-        person_physical.mailconj = request.data.get('spouseMail')
+        person_physical.estcivil = request.data.get('estcivil')
+        person_physical.depend = request.data.get('depend')
+        person_physical.pensao = request.data.get('pensao')
+        person_physical.conjugue = request.data.get('conjugue')
+        person_physical.cpfconj = request.data.get('cpfconj')
+        person_physical.profconj = request.data.get('profconj')
+        person_physical.emprconj = request.data.get('emprconj')
+        person_physical.rendaconj = request.data.get('rendaconj')
+        person_physical.telconj = request.data.get('telconj')
+        person_physical.mailconj = request.data.get('mailconj')
 
         person_physical.save()
     except:
@@ -778,14 +784,15 @@ def edit_person_physical(request, id_person):
     addresses_array = request.data.get('adresses')
     for address in addresses_array:
         try:
-            address_registred = Enderecos.objects.get(address['idAddress'])
-            address_registred.rua = address['street']
-            address_registred.numero = address['numberHouse']
-            address_registred.complemento = address['complement']
-            address_registred.bairro = address['neighborhood']
-            address_registred.cep = address['zipCode']
-            address_registred.cidade = address['city']
-            address_registred.estado_endereco = address['stateAdress']
+            address_registred = Enderecos.objects.get(
+                pk=address['id_enderecos'])
+            address_registred.rua = address['rua']
+            address_registred.numero = address['numero']
+            address_registred.complemento = address['complemento']
+            address_registred.bairro = address['bairro']
+            address_registred.cep = address['cep']
+            address_registred.cidade = address['cidade']
+            address_registred.estado_endereco = address['estado_endereco']
 
             address_registred.save()
         except:
@@ -798,8 +805,8 @@ def edit_person_physical(request, id_person):
     phones_array = request.data.get('phones')
     for phone in phones_array:
         try:
-            phone_registered = Telefones.objects.get(pk=phone['idPhone'])
-            phone_registered.tel = phone['phoneNumber']
+            phone_registered = Telefones.objects.get(pk=phone['id_telefone'])
+            phone_registered.tel = phone['tel']
 
             phone_registered.save()
         except:
@@ -812,8 +819,8 @@ def edit_person_physical(request, id_person):
     mails_array = request.data.get('mails')
     for mail in mails_array:
         try:
-            mail_registered = Mails.objects.get(pk=mail['idMail'])
-            mail_registered.email = mail['userMail']
+            mail_registered = Mails.objects.get(pk=mail['id_mails'])
+            mail_registered.email = mail['email']
 
             mail_registered.save()
         except:
@@ -827,11 +834,11 @@ def edit_person_physical(request, id_person):
     for reference in references_array:
         try:
             references_registered = Referencias.objects.get(
-                pk=reference['idReference'])
-            references_registered.tipo = reference['redferenceType']
-            references_registered.nome = reference['referenceName']
-            references_registered.tel = reference['referencePhone']
-            references_registered.endereco = reference['referenceAdress']
+                pk=reference['id_referencia'])
+            references_registered.tipo = reference['tipo']
+            references_registered.nome = reference['nome']
+            references_registered.tel = reference['tel']
+            references_registered.endereco = reference['endereco']
 
             references_registered.save()
         except:
@@ -845,12 +852,12 @@ def edit_person_physical(request, id_person):
     for banking_reference in banking_references_array:
         try:
             banking_reference_registred = Refbanco.objects.get(
-                pk=banking_reference['idBankingReference'])
-            banking_reference_registred.id_bancos_fk = banking_reference['idBanking']
-            banking_reference_registred.agencia = banking_reference['agency']
-            banking_reference_registred.conta = banking_reference['account']
-            banking_reference_registred.abertura = banking_reference['opening']
-            banking_reference_registred.tipo = banking_reference['type']
+                pk=banking_reference['id_banco'])
+            banking_reference_registred.id_bancos_fk = banking_reference['id_bancos_fk']
+            banking_reference_registred.agencia = banking_reference['agencia']
+            banking_reference_registred.conta = banking_reference['conta']
+            banking_reference_registred.abertura = banking_reference['abertura']
+            banking_reference_registred.tipo = banking_reference['tipo']
 
             banking_reference_registred.save()
         except:

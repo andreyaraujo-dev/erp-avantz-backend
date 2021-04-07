@@ -8,6 +8,7 @@ from rest_framework import status
 from datetime import datetime
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Count
 
 from users.authentication import SafeJWTAuthentication
 
@@ -20,12 +21,26 @@ from .serializers import MunicipiosSerializer
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
 def index(request):
-    id_institution = request.user.instit_id
-
     try:
         counties = Municipios.objects.all()
         counties_serialized = MunicipiosSerializer(counties, many=True)
         return Response(counties_serialized.data)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível pesquisar os municípios', code=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def select_ufs(request):
+    try:
+        counties = Municipios.objects.order_by(
+            'uf_sigla').values('uf_sigla').distinct()
+        # counties_serialized = MunicipiosSerializer(counties, many=True)
+
+        return Response(counties)
     except:
         raise exceptions.APIException(
             'Não foi possível pesquisar os municípios', code=400)
