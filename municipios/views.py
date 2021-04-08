@@ -36,11 +36,23 @@ def index(request):
 @ensure_csrf_cookie
 def select_ufs(request):
     try:
+        ufs = []
         counties = Municipios.objects.order_by(
-            'uf_sigla').values('uf_sigla').distinct()
-        # counties_serialized = MunicipiosSerializer(counties, many=True)
+            'uf_sigla').values('uf_sigla', 'id_municipios').distinct()
 
-        return Response(counties)
+        i = 0
+        for c in counties:
+            if len(ufs) == 0:
+                ufs.append(
+                    dict(id_municipios=c['id_municipios'], uf_sigla=c['uf_sigla']))
+
+            while ufs[i]['uf_sigla'] != c['uf_sigla']:
+                print(f'UF', c['uf_sigla'])
+                ufs.append(
+                    dict(id_municipios=c['id_municipios'], uf_sigla=c['uf_sigla']))
+                i += 1
+
+        return Response(ufs)
     except:
         raise exceptions.APIException(
             'Não foi possível pesquisar os municípios', code=400)

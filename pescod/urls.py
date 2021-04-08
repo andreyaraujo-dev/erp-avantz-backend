@@ -10,6 +10,8 @@ urlpatterns = [
     path('physical/details/<int:id_person>',
          details_physical_person, name='details_person'),
     path('physical', find_physical_persons, name='find_physical_persons'),
+    path('physical/<str:personName>', find_physical_persons,
+         name='find_physical_person_by_name'),
     path('legal', find_legal_persons, name='find_legal_persons'),
     path('legal/<str:personName>', find_legal_persons,
          name='find_legal_person_by_name'),
