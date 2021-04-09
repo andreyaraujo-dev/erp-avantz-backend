@@ -1,10 +1,11 @@
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
 from datetime import datetime
+from django.db import transaction
 
 from users.authentication import SafeJWTAuthentication
 from instituicao.models import Instit
@@ -30,14 +31,15 @@ def index(request, id_person):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
+@transaction.atomic
 def store(request):
     references_array = request.data.get('personReferences')
 
     for reference in references_array:
         try:
             references_registered = Referencias(id_pessoa_cod_fk=reference['idPerson'],
-                                                situacao=reference['referenceSituation'], tipo=reference['referenceType'], nome=reference['referenceName'], tel=reference['referencePhone'], endereco=reference['referenceAdress'], data_criacao=datetime.now())
+                                                situacao=reference['referenceSituation'], tipo=reference['referenceType'], nome=reference['referenceName'], tel=reference['referencePhone'], endereco=reference['referenceAddress'], data_criacao=datetime.now())
             references_registered.save()
         except:
             raise exceptions.APIException(
@@ -52,7 +54,8 @@ def store(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
+@transaction.atomic
 def update(request):
     references_array = request.data.get('personReferences')
 
@@ -62,7 +65,7 @@ def update(request):
                 pk=reference['idReference'])
             personReference.nome = reference['referenceName']
             personReference.tel = reference['referencePhone']
-            personReference.endereco = reference['referenceAdress']
+            personReference.endereco = reference['referenceAddress']
             personReference.tipo = reference['referenceType']
             personReference.save()
         except:
@@ -74,7 +77,8 @@ def update(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
+@transaction.atomic
 def delete(request, id_reference):
     try:
         reference = Referencias.objects.get(pk=id_reference)

@@ -96,31 +96,40 @@ def find_legal_persons(request, personName=None):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-@ensure_csrf_cookie
+@csrf_exempt
 @transaction.atomic
 def store_person_physical(request):
     id_institution = request.user.instit_id
-    cpf = request.data.get('personCPF')
+    cpf = request.data.get('cpfcnpj')
     """  
     FIND CPF ON DATABASE. IF EXIST, NO REGISTER AND RETURN
     """
-    person = Pescod.objects.filter(
+    person_already_exists = Pescod.objects.filter(
         id_instituicao_fk=id_institution, cpfcnpj=cpf, sit=2)
-    if person:
+    if person_already_exists:
         return Response({'detail': 'Já existe um registro ativo com este CPF. Por favor revise os dados.'}, status=status.HTTP_400_BAD_REQUEST)
 
     """  
     REGISTER PESCOD
     """
-    provider = request.data.get('personIsProvider')
-    name = request.data.get('personName')
-    person_photo = request.data.get('personPhoto')
-    person_limit = request.data.get('personLimit')
-    person_balance = request.data.get('personBalance')
+    provider = request.data.get('forn')
+    person_name = request.data.get('nomeorrazaosocial')
+    person_photo = request.data.get('foto')
+    person_limit = request.data.get('limite')
+    person_balance = request.data.get('saldo')
 
     try:
-        person = Pescod(id_instituicao_fk=id_institution, tipo=1, sit=1, forn=provider, cpfcnpj=cpf,
-                        nomeorrazaosocial=name, foto=person_photo, img_bites=0, limite=person_limit, saldo=person_balance, data_criacao=timezone.now())
+        person = Pescod(id_instituicao_fk=id_institution,
+                        tipo=1,
+                        sit=2,
+                        forn=provider,
+                        cpfcnpj=cpf,
+                        nomeorrazaosocial=person_name,
+                        foto=person_photo,
+                        img_bites=0,
+                        limite=person_limit,
+                        saldo=person_balance,
+                        data_criacao=timezone.now())
         person.save()
     except:
         raise exceptions.APIException(
@@ -130,62 +139,61 @@ def store_person_physical(request):
     REGISTER PHYSICAL PERSON
     """
     person_registred_id = person.id_pessoa_cod
-    identity = request.data.get('personIdentity')
-    issuer_identity = request.data.get('issuerIdentity')
-    id_municipality = request.data.get('personMunicipality')
-    id_uf = request.data.get('personUF')
-    date_of_birth = request.data.get('personBirth')
-    treatment = request.data.get('personTreatment')
-    nickname = request.data.get('personNickname')
-    sex = request.data.get('personSex')
-    father = request.data.get('personFather')
-    mother = request.data.get('personMother')
-    profession = request.data.get('personProfession')
+    identity = request.data.get('identidade')
+    issuer_identity = request.data.get('emissor_identidade')
+    id_municipality = request.data.get('id_municipio_fk')
+    id_uf = request.data.get('id_uf_municipio_fk')
+    date_of_birth = request.data.get('data_de_nascimento')
+    treatment = request.data.get('tratam')
+    nickname = request.data.get('apelido')
+    sex = request.data.get('sexo')
+    father = request.data.get('pai')
+    mother = request.data.get('mae')
+    profession = request.data.get('profissao')
     ctps = request.data.get('ctps')
-    salary = request.data.get('personSalary')
-    company = request.data.get('personCompany')
-    company_responsible = request.data.get('companyResponsible')
-    company_cnpj = request.data.get('companyCnpj')
-    state_registration = request.data.get('stateRegistrationCompany')
-    municipal_registration = request.data.get('municipalRegistrationCompany')
-    company_adress = request.data.get('companyAdress')
-    other_income = request.data.get('otherIncome')
-    income_value = request.data.get('incomeValue')
+    salary = request.data.get('salario')
+    company = request.data.get('empresa')
+    company_responsible = request.data.get('resp')
+    company_cnpj = request.data.get('cnpj')
+    state_registration = request.data.get('iest')
+    municipal_registration = request.data.get('imun')
+    company_adress = request.data.get('emprend')
+    other_income = request.data.get('orendas')
+    income_value = request.data.get('vrendas')
     irpf = request.data.get('irpf')
-    marital_status = request.data.get('maritalStatus')
-    dependents = request.data.get('personDependents')
-    pension = request.data.get('pension')
-    spouse = request.data.get('spouse')
-    spouse_cpf = request.data.get('spouseCpf')
-    spouse_profession = request.data.get('spouseProfession')
-    spouse_company = request.data.get('spouseCompany')
-    spouse_income = request.data.get('spouseIncome')
-    spouse_phone = request.data.get('spousePhone')
-    spouse_mail = request.data.get('spouseMail')
-
-    person_physical = Pesfis(id_pessoa_cod_fk=person_registred_id, identidade=identity, emissor_identidade=issuer_identity, id_municipio_fk=id_municipality,
-                             id_uf_municipio_fk=id_uf, data_de_nascimento=date_of_birth, tratam=treatment, apelido=nickname, sexo=sex, pai=father, mae=mother,
-                             profissao=profession, ctps=ctps, salario=salary, empresa=company, resp=company_responsible, cnpj=company_cnpj, iest=state_registration,
-                             imun=municipal_registration, emprend=company_adress, orendas=other_income, vrendas=income_value, irpf=irpf, estcivil=marital_status,
-                             depend=dependents, pensao=pension, conjuge=spouse, cpfconj=spouse_cpf, profconj=spouse_profession, emprconj=spouse_company,
-                             rendaconj=spouse_income, telconj=spouse_phone, mailconj=spouse_mail, data_criacao=timezone.now())
+    marital_status = request.data.get('estcivil')
+    dependents = request.data.get('depend')
+    pension = request.data.get('pensao')
+    spouse = request.data.get('conjuge')
+    spouse_cpf = request.data.get('cpfconj')
+    spouse_profession = request.data.get('profconj')
+    spouse_company = request.data.get('emprconj')
+    spouse_income = request.data.get('rendaconj')
+    spouse_phone = request.data.get('telconj')
+    spouse_mail = request.data.get('mailconj')
 
     try:
+        person_physical = Pesfis(id_pessoa_cod_fk=person_registred_id, identidade=identity, emissor_identidade=issuer_identity, id_municipio_fk=id_municipality,
+                                 id_uf_municipio_fk=id_uf, data_de_nascimento=date_of_birth, tratam=treatment, apelido=nickname, sexo=sex, pai=father, mae=mother,
+                                 profissao=profession, ctps=ctps, salario=salary, empresa=company, resp=company_responsible, cnpj=company_cnpj, iest=state_registration,
+                                 imun=municipal_registration, emprend=company_adress, orendas=other_income, vrendas=income_value, irpf=irpf, estcivil=marital_status,
+                                 depend=dependents, pensao=pension, conjuge=spouse, cpfconj=spouse_cpf, profconj=spouse_profession, emprconj=spouse_company,
+                                 rendaconj=spouse_income, telconj=spouse_phone, mailconj=spouse_mail, data_criacao=timezone.now())
         person_physical.save()
     except:
         raise exceptions.APIException(
-            'Não foi possível cadastrar os dados de pessoa física')
+            'Não foi possível cadastrar os dados de pessoa física.')
 
     """ 
     REGISTER ADRESS
     """
-    adresses_array = request.data.get('adresses')
-    for adress in adresses_array:
+    addresses_array = request.data.get('addresses')
+    for address in addresses_array:
         try:
-            adress_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=person_registred_id, endtip=1, rua=adress['street'],
-                                         numero=adress['numberHouse'], complemento=adress['complement'], bairro=adress['neighborhood'],
-                                         cep=adress['zipCode'], cidade=adress['city'], estado_endereco=adress['stateAdress'], data_criacao=timezone.now())
-            adress_registred.save()
+            address_registred = Enderecos(situacao=1, origem=1, id_pessoa_cod_fk=person_registred_id, endtip=1, rua=address['street'],
+                                          numero=address['numberHouse'], complemento=address['complement'], bairro=address['neighborhood'],
+                                          cep=address['zipCode'], cidade=address['city'], estado_endereco=address['state'], data_criacao=timezone.now())
+            address_registred.save()
         except:
             raise exceptions.APIException(
                 'Não foi possível salvar todos os dados de endereço')
@@ -414,7 +422,7 @@ def store_legal_person(request):
         legal_person.save()
     except:
         raise exceptions.APIException(
-            'Não foi possível cadastrar os dados de pessoa jurídica')
+            'Não foi possível cadastrar os dados de pessoa jurídica.')
 
     """ 
     REGISTER ADRESS
