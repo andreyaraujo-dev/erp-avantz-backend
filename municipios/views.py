@@ -47,7 +47,6 @@ def select_ufs(request):
                     dict(id_municipios=c['id_municipios'], uf_sigla=c['uf_sigla']))
 
             while ufs[i]['uf_sigla'] != c['uf_sigla']:
-                print(f'UF', c['uf_sigla'])
                 ufs.append(
                     dict(id_municipios=c['id_municipios'], uf_sigla=c['uf_sigla']))
                 i += 1

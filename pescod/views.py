@@ -113,8 +113,8 @@ def store_person_physical(request):
     REGISTER PESCOD
     """
     provider = request.data.get('forn')
-    person_name = request.data.get('nomeorrazaosocial')
     person_photo = request.data.get('foto')
+    person_name = request.data.get('nomeorrazaosocial')
     person_limit = request.data.get('limite')
     person_balance = request.data.get('saldo')
 
