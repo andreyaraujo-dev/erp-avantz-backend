@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import update_session_auth_hash
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt, csrf_protect
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,6 +12,7 @@ from .serializers import UsersSerializers, ChangePasswordSerializer
 from .utils import generate_access_token, generate_refresh_token
 from .authentication import SafeJWTAuthentication
 from instituicao.models import Instit
+from django.db import transaction
 
 
 @api_view(['GET'])
@@ -54,6 +54,10 @@ def login(request):
 
     # check if the user has been active
     if user.ativo == 0:
+        raise exceptions.AuthenticationFailed('Este usuário está desativado')
+
+    # check if the user has been deleted
+    if user.is_deleted == 1:
         raise exceptions.AuthenticationFailed('Este usuário está desativado')
 
     instituicao = Instit.objects.get(pk=user.instit_id)
@@ -121,9 +125,10 @@ def refresh_token_view(request):
 
 
 @api_view(['POST'])
-@ensure_csrf_cookie
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
 def register(request):
     User = get_user_model()
     username = request.data.get('username')
@@ -149,9 +154,10 @@ def register(request):
 
 
 @api_view(['POST', 'PUT'])
-@ensure_csrf_cookie
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
 def edit(request):
     User = get_user_model()
     first_name = request.data.get('firstName')
@@ -177,22 +183,34 @@ def edit(request):
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
-def list_all(request):
+@transaction.atomic
+def list_all(request, userName=None):
     User = get_user_model()
     id_instit = request.user.instit_id
-    try:
-        users = User.objects.filter(instit_id=id_instit)
-        users_serialized = UsersSerializers(users, many=True).data
+    if userName == None:
+        try:
+            users = User.objects.filter(instit_id=id_instit, is_deleted=0)
+            users_serialized = UsersSerializers(users, many=True).data
 
-        return Response({'users': users_serialized})
-    except:
-        raise exceptions.APIException
+            return Response({'users': users_serialized})
+        except:
+            raise exceptions.APIException
+    else:
+        try:
+            users = User.objects.filter(
+                instit_id=id_instit, first_name__contains=userName, is_deleted=0)
+            users_serialized = UsersSerializers(users, many=True).data
+
+            return Response({'users': users_serialized})
+        except:
+            raise exceptions.APIException
 
 
 @api_view(['PUT', 'POST'])
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
 def admin_edit(request, id):
     """ 
     FUNCTION FOR THE ADMINISTRATOR TO EDIT THE USER DATA OF THEIR RESPECTIVE INSTITUTION
@@ -227,17 +245,53 @@ def admin_edit(request, id):
 @ensure_csrf_cookie
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
 def disabled_user(request, id):
     User = get_user_model()
+    id_instit = request.user.instit_id
     # user_id = request.data.get('userId')
 
+    user = User.objects.filter(
+        id=id, ativo=1, is_active=1, is_deleted=0).first()
+    if not user:
+        return Response({'detail': 'Registro não encontrado, tente novamente.'}, status=status.HTTP_404_NOT_FOUND)
+
     try:
-        user = User.objects.get(pk=id)
         user.ativo = 0
         user.is_active = 0
         user.save()
 
-        return Response({'detail': 'Usuário deletado com sucesso'})
+        users = User.objects.filter(instit_id=id_instit, is_deleted=0)
+        users_serialized = UsersSerializers(users, many=True)
+
+        return Response(users_serialized.data)
+    except:
+        return Response({'detail': exceptions.APIException})
+
+
+@api_view(['PUT'])
+@ensure_csrf_cookie
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
+def delete(request, id):
+    User = get_user_model()
+    id_instit = request.user.instit_id
+    # user_id = request.data.get('userId')
+
+    user = User.objects.filter(
+        id=id, is_deleted=0).first()
+    if not user:
+        return Response({'detail': 'Registro não encontrado, tente novamente.'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        user.is_deleted = 1
+        user.save()
+
+        users = User.objects.filter(instit_id=id_instit, is_deleted=0)
+        users_serialized = UsersSerializers(users, many=True)
+
+        return Response(users_serialized.data)
     except:
         return Response({'detail': exceptions.APIException})
 
