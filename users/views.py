@@ -206,8 +206,8 @@ def list_all(request, userName=None):
             raise exceptions.APIException
 
 
-@api_view(['PUT', 'POST'])
-@ensure_csrf_cookie
+@api_view(['PUT'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @transaction.atomic
