@@ -84,6 +84,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
         blank=True, null=True, auto_now_add=True)
     data_de_exclusao = models.DateTimeField(
         blank=True, null=True, auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
 
     objects = UserManager()
 

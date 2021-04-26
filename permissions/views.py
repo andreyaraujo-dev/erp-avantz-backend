@@ -14,7 +14,8 @@ from .serializers import RotinasSerializer
 @ensure_csrf_cookie
 def index(request):
     try:
-        permissions = Rotinas.objects.filter(sit=1)
+        permissions = Rotinas.objects.filter(
+            sit=1, posicao_rotina__gt=0)
         permissions_serialized = RotinasSerializer(permissions, many=True)
         return Response(permissions_serialized.data)
     except:
