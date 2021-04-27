@@ -22,9 +22,12 @@ from django.db import transaction
 def profile(request):
     User = get_user_model()
     user_id = request.user.id
-    user = User.objects.get(pk=user_id)
-    serialized_user = UsersSerializers(user)
-    return Response({'user': serialized_user.data})
+    try:
+        user = User.objects.get(pk=user_id)
+        serialized_user = UsersSerializers(user)
+        return Response({'user': serialized_user.data})
+    except:
+        raise exceptions.APIException('Não foi possível pesquisar seus dados.')
 
 
 @api_view(['POST'])
@@ -79,6 +82,7 @@ def login(request):
     response.data = {
         'access_token': access_token,
         'user': serialized_user,
+        'institution': instituicao.nome
     }
 
     return response
