@@ -40,10 +40,31 @@ class AccountAccount(models.Model):
         db_table = 'account_account'
 
 
+class AccountAccountGroups(models.Model):
+    account = models.ForeignKey(AccountAccount, models.DO_NOTHING)
+    group = models.ForeignKey('AuthGroup', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'account_account_groups'
+        unique_together = (('account', 'group'),)
+
+
+class AccountAccountUserPermissions(models.Model):
+    account = models.ForeignKey(AccountAccount, models.DO_NOTHING)
+    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'account_account_user_permissions'
+        unique_together = (('account', 'permission'),)
+
+
 class Acessos(models.Model):
     instit = models.PositiveIntegerField()
     iduser = models.PositiveIntegerField()
     user = models.CharField(max_length=10, blank=True, null=True)
+    data = models.DateTimeField(blank=True, null=True)
     rotina = models.IntegerField(blank=True, null=True)
     acess = models.CharField(max_length=50, blank=True, null=True)
     data_at = models.DateTimeField(blank=True, null=True)
@@ -58,7 +79,8 @@ class Aliquotas(models.Model):
     instit = models.PositiveIntegerField()
     descr = models.CharField(max_length=6)
     bematech = models.CharField(max_length=2)
-    valor = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -70,12 +92,18 @@ class Audit(models.Model):
     id = models.IntegerField(primary_key=True)
     loja = models.PositiveIntegerField(blank=True, null=True)
     codpro = models.PositiveIntegerField()
-    frtold = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    frtnew = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    depold = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    depnew = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    fscold = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    fscnew = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    frtold = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    frtnew = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    depold = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    depnew = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    fscold = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    fscnew = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
     usuario = models.CharField(max_length=10, blank=True, null=True)
     datatz = models.DateTimeField(blank=True, null=True)
 
@@ -117,7 +145,8 @@ class Bancos(models.Model):
     id_bancos = models.IntegerField(primary_key=True)
     cod = models.PositiveIntegerField()
     banco = models.CharField(max_length=50)
-    ispb = models.PositiveIntegerField(db_column='ISPB')  # Field name made lowercase.
+    # Field name made lowercase.
+    ispb = models.PositiveIntegerField(db_column='ISPB')
     compens = models.PositiveIntegerField()
 
     class Meta:
@@ -149,7 +178,8 @@ class Bancosextr(models.Model):
 
 class BoletoCbRemessa(models.Model):
     id_boleto_cb_remessa = models.AutoField(primary_key=True)
-    id_banco_fk = models.ForeignKey(Bancos, models.DO_NOTHING, db_column='id_banco_fk', blank=True, null=True)
+    id_banco_fk = models.ForeignKey(
+        Bancos, models.DO_NOTHING, db_column='id_banco_fk', blank=True, null=True)
     id_remessa_banco = models.IntegerField(blank=True, null=True)
     situacao = models.CharField(max_length=100, blank=True, null=True)
 
@@ -358,7 +388,8 @@ class Ccaixa(models.Model):
 
 
 class Ceps(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     cep = models.PositiveIntegerField(unique=True)
     idmunic = models.PositiveIntegerField()
     iduf = models.PositiveIntegerField()
@@ -372,7 +403,8 @@ class Ceps(models.Model):
 
 
 class Cnae(models.Model):
-    id = models.PositiveIntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.PositiveIntegerField(db_column='Id', primary_key=True)
     cnae20 = models.CharField(max_length=9, blank=True, null=True)
     descr = models.CharField(max_length=170, blank=True, null=True)
 
@@ -382,7 +414,8 @@ class Cnae(models.Model):
 
 
 class CodigoCfop(models.Model):
-    cfop = models.IntegerField(db_column='CFOP', blank=True, null=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    cfop = models.IntegerField(db_column='CFOP', blank=True, null=True)
     inicio_vigencia = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -468,71 +501,8 @@ class Configs(models.Model):
         db_table = 'configs'
 
 
-class Contasfin(models.Model):
-    instit_id = models.PositiveIntegerField()
-    sit = models.PositiveIntegerField()
-    tipo = models.PositiveIntegerField(blank=True, null=True)
-    idsecao = models.PositiveIntegerField()
-    nome = models.CharField(max_length=30)
-    dtabr = models.DateTimeField(blank=True, null=True)
-    saldoini = models.DecimalField(max_digits=10, decimal_places=2)
-    cobr = models.PositiveIntegerField()
-    idbco = models.PositiveIntegerField()
-    conv = models.CharField(max_length=20, blank=True, null=True)
-    convdig = models.CharField(max_length=1, blank=True, null=True)
-    cedente = models.CharField(max_length=40, blank=True, null=True)
-    ced_endlogr = models.CharField(max_length=60, blank=True, null=True)
-    ced_endnum = models.CharField(max_length=8, blank=True, null=True)
-    ced_endcomp = models.CharField(max_length=30, blank=True, null=True)
-    ced_endbairro = models.CharField(max_length=30, blank=True, null=True)
-    ced_endcep = models.CharField(max_length=9, blank=True, null=True)
-    ced_endcidade = models.CharField(max_length=35, blank=True, null=True)
-    ced_enduf = models.CharField(max_length=2, blank=True, null=True)
-    cpfcnpj = models.CharField(max_length=18, blank=True, null=True)
-    cedcod = models.CharField(max_length=8, blank=True, null=True)
-    cedagenc = models.CharField(max_length=4, blank=True, null=True)
-    cedagd = models.CharField(max_length=1, blank=True, null=True)
-    cedconta = models.CharField(max_length=10, blank=True, null=True)
-    cedctdig = models.CharField(max_length=1, blank=True, null=True)
-    oper = models.CharField(max_length=3, blank=True, null=True)
-    carteira = models.CharField(max_length=3, blank=True, null=True)
-    variacao = models.CharField(max_length=2, blank=True, null=True)
-    idbolesp = models.PositiveIntegerField()
-    instr1 = models.CharField(max_length=80, blank=True, null=True)
-    instr2 = models.CharField(max_length=80, blank=True, null=True)
-    instr3 = models.CharField(max_length=80, blank=True, null=True)
-    idmoeda = models.PositiveIntegerField()
-    taxa = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    gerente = models.CharField(max_length=25, blank=True, null=True)
-    tel = models.CharField(max_length=14, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-    mora_mes = models.DecimalField(max_digits=6, decimal_places=2)
-    dias_protesto = models.PositiveIntegerField()
-    multa_atraso = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        managed = False
-        db_table = 'contasfin'
-        unique_together = (('instit_id', 'tipo', 'cedagenc', 'cedconta'), ('instit_id', 'idsecao'),)
 
 
-class Contasmv(models.Model):
-    instit_id = models.PositiveIntegerField()
-    idctfin = models.PositiveIntegerField()
-    idsecao = models.PositiveIntegerField()
-    tipo = models.PositiveIntegerField()
-    descr = models.CharField(max_length=60, blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    dat = models.DateTimeField(blank=True, null=True)
-    idorigem = models.PositiveIntegerField()
-    usuario = models.PositiveIntegerField()
-    mcx = models.PositiveIntegerField()
-    sit = models.PositiveIntegerField()
-    saldocons = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        managed = False
-        db_table = 'contasmv'
 
 
 class Contaspg(models.Model):
@@ -546,10 +516,13 @@ class Contaspg(models.Model):
     idsecdsp = models.PositiveIntegerField()
     emissao = models.DateTimeField()
     venc = models.DateTimeField()
-    valdoc = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    valdoc = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     dtpg = models.DateTimeField(blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    valpg = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    valpg = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     pago = models.PositiveIntegerField(blank=True, null=True)
     idsecfav = models.PositiveIntegerField()
     idctfin = models.PositiveIntegerField()
@@ -591,11 +564,14 @@ class Contasrc(models.Model):
 
 
 class Devpro(models.Model):
-    id = models.PositiveIntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.PositiveIntegerField(db_column='Id', primary_key=True)
     forn = models.PositiveIntegerField(blank=True, null=True)
-    valor = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
     gera_crd = models.PositiveIntegerField(blank=True, null=True)
-    qtd = models.DecimalField(max_digits=9, decimal_places=3, blank=True, null=True)
+    qtd = models.DecimalField(
+        max_digits=9, decimal_places=3, blank=True, null=True)
     dtz = models.DateTimeField(blank=True, null=True)
     usuario = models.PositiveIntegerField()
     loja = models.PositiveIntegerField()
@@ -611,8 +587,9 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('UsersUsers', models.DO_NOTHING)
+    content_type = models.ForeignKey(
+        'DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(AccountAccount, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -639,18 +616,6 @@ class DjangoMigrations(models.Model):
         db_table = 'django_migrations'
 
 
-class DjangoRestPasswordresetResetpasswordtoken(models.Model):
-    created_at = models.DateTimeField()
-    key = models.CharField(unique=True, max_length=64)
-    ip_address = models.CharField(max_length=39, blank=True, null=True)
-    user_agent = models.CharField(max_length=256)
-    user = models.ForeignKey('UsersUsers', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_rest_passwordreset_resetpasswordtoken'
-
-
 class DjangoSession(models.Model):
     session_key = models.CharField(primary_key=True, max_length=40)
     session_data = models.TextField()
@@ -674,37 +639,6 @@ class ECarousel(models.Model):
         db_table = 'e_carousel'
 
 
-class ECupom(models.Model):
-    e_id_cupom = models.AutoField(primary_key=True)
-    e_id_usuario_addcupom = models.IntegerField(db_column='e_id_usuario_addCupom')  # Field name made lowercase.
-    e_id_usuario_editcupom = models.IntegerField(db_column='e_id_usuario_editCupom', blank=True, null=True)  # Field name made lowercase.
-    tipo_cupom = models.IntegerField()
-    nome_cupom = models.CharField(max_length=20)
-    porcentagemouvalorreal = models.IntegerField(db_column='porcentagemOUvalorreal')  # Field name made lowercase.
-    valor_cupom = models.DecimalField(max_digits=10, decimal_places=2)
-    cupom_quantidade = models.IntegerField()
-    data_validade = models.DateField(blank=True, null=True)
-    status_uso = models.IntegerField()
-    status = models.IntegerField()
-    data_criacao = models.DateTimeField()
-    data_atualizacao = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'e_cupom'
-
-
-class ECupomUsado(models.Model):
-    e_id_cupom_usado = models.AutoField(primary_key=True)
-    e_id_fk_cupom = models.ForeignKey(ECupom, models.DO_NOTHING, db_column='e_id_fk_cupom')
-    e_id_usuario_usdocupom = models.IntegerField(db_column='e_id_usuario_usdoCupom')  # Field name made lowercase.
-    data_de_usocupom = models.DateTimeField(db_column='data_de_usoCupom')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'e_cupom_usado'
-
-
 class EPermissao(models.Model):
     ide_permissao = models.AutoField(primary_key=True)
     descricao = models.CharField(max_length=45)
@@ -715,7 +649,9 @@ class EPermissao(models.Model):
 
 
 class EProdutoDestaque(models.Model):
-    id_e_produtodest = models.AutoField(db_column='id_e_produtoDest', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id_e_produtodest = models.AutoField(
+        db_column='id_e_produtoDest', primary_key=True)
     id_produto_fk = models.IntegerField()
     status = models.IntegerField()
     data_de_criacao = models.DateTimeField()
@@ -728,7 +664,8 @@ class EProdutoDestaque(models.Model):
 
 class EUsuario(models.Model):
     id_e_usuario = models.AutoField(primary_key=True)
-    id_e_permissao_fk = models.ForeignKey(EPermissao, models.DO_NOTHING, db_column='id_e_permissao_fk')
+    id_e_permissao_fk = models.ForeignKey(
+        EPermissao, models.DO_NOTHING, db_column='id_e_permissao_fk')
     nome = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
@@ -746,7 +683,8 @@ class Ecaixa(models.Model):
     instit = models.PositiveIntegerField()
     idctrec = models.PositiveIntegerField()
     dat = models.DateTimeField()
-    val = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    val = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     idfpgt = models.PositiveIntegerField()
     idccx = models.PositiveIntegerField()
     ref = models.CharField(max_length=60)
@@ -793,7 +731,8 @@ class Fabpro(models.Model):
 
 
 class Feriados(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     data = models.DateTimeField()
     ativo = models.PositiveIntegerField()
     descr = models.CharField(max_length=20, blank=True, null=True)
@@ -837,8 +776,10 @@ class Formpg(models.Model):
 
 class Fotos(models.Model):
     id_foto = models.AutoField(primary_key=True)
-    id_instituicao = models.ForeignKey('Instit', models.DO_NOTHING, db_column='id_instituicao')
-    id_produto = models.ForeignKey('Produtos', models.DO_NOTHING, db_column='id_produto')
+    id_instituicao = models.ForeignKey(
+        'Instit', models.DO_NOTHING, db_column='id_instituicao')
+    id_produto = models.ForeignKey(
+        'Produtos', models.DO_NOTHING, db_column='id_produto')
     nome_arquivo = models.CharField(max_length=100)
     data_criacao = models.DateTimeField(blank=True, null=True)
     data_atualizacao = models.DateTimeField(blank=True, null=True)
@@ -866,11 +807,12 @@ class Funcio(models.Model):
     class Meta:
         managed = False
         db_table = 'funcio'
-        unique_together = (('instit', 'nome'), ('instit', 'idpescod'),)
+        unique_together = (('instit', 'idpescod'), ('instit', 'nome'),)
 
 
 class Gcom(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     descr = models.CharField(max_length=50, blank=True, null=True)
     valor = models.CharField(max_length=60, blank=True, null=True)
 
@@ -879,50 +821,37 @@ class Gcom(models.Model):
         db_table = 'gcom'
 
 
-class ImagensUsuariosImagensusuarios(models.Model):
-    imagem = models.CharField(max_length=255)
-    instit = models.ForeignKey('Instit', models.DO_NOTHING)
-    user = models.ForeignKey('UsersUsers', models.DO_NOTHING)
-    created_at = models.DateTimeField(blank=True, null=True)
+class GcomBtns(models.Model):
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
+    ativo = models.PositiveIntegerField()
+    ordem = models.PositiveIntegerField()
+    tipo = models.PositiveIntegerField()
+    rotulo = models.CharField(max_length=50, blank=True, null=True)
+    nome = models.CharField(max_length=10, blank=True, null=True)
+    action = models.CharField(max_length=40, blank=True, null=True)
+    img = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'imagens_usuarios_imagensusuarios'
+        db_table = 'gcom_btns'
 
-
-class Imprfisc(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    loja = models.PositiveIntegerField()
-    nome = models.CharField(max_length=20)
-    monitor = models.CharField(max_length=15)
-    status = models.PositiveIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'imprfisc'
-
-
-class Imprfiscfila(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    fila = models.IntegerField()
-    data = models.DateTimeField()
-    texto = models.TextField()
-
-    class Meta:
-        managed = False
-        db_table = 'imprfiscfila'
 
 
 class Infpatrim(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     deleted = models.PositiveIntegerField()
     idpescod = models.PositiveIntegerField()
     tipo = models.PositiveIntegerField()
     registro = models.CharField(max_length=20, blank=True, null=True)
     descr = models.CharField(max_length=80)
-    valor = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
-    debito = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
-    prestacao = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=12, decimal_places=2, blank=True, null=True)
+    debito = models.DecimalField(
+        max_digits=12, decimal_places=2, blank=True, null=True)
+    prestacao = models.DecimalField(
+        max_digits=12, decimal_places=2, blank=True, null=True)
     data = models.DateTimeField()
 
     class Meta:
@@ -963,7 +892,8 @@ class Instit(models.Model):
 
 
 class ItCcx(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     idccx = models.PositiveIntegerField()
     tipo = models.PositiveIntegerField()
     descr = models.CharField(max_length=30, blank=True, null=True)
@@ -1010,13 +940,17 @@ class ItLoc(models.Model):
 
 
 class ItLocDev(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     identr = models.PositiveIntegerField()
-    qtd = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    qtd = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
     dtentr = models.DateTimeField(blank=True, null=True)
     dtdev = models.DateTimeField(blank=True, null=True)
-    val = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    val = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    total = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     idloc = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
@@ -1025,13 +959,17 @@ class ItLocDev(models.Model):
 
 
 class ItLocEnt(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     idloc = models.PositiveIntegerField()
     prod = models.CharField(max_length=40, blank=True, null=True)
-    qtd = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    qtd = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
     dtentr = models.DateTimeField(blank=True, null=True)
-    dev = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    dev = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     dtdev = models.DateTimeField(blank=True, null=True)
     cprod = models.PositiveIntegerField(blank=True, null=True)
 
@@ -1057,14 +995,14 @@ class ItOrcam(models.Model):
 
 
 class ItPed(models.Model):
-    id_pedido = models.PositiveIntegerField()
+    id = models.PositiveIntegerField(primary_key=True)
+    idorigem = models.PositiveIntegerField()
     cpro = models.PositiveIntegerField(blank=True, null=True)
     prod = models.CharField(max_length=50)
     und = models.CharField(max_length=2)
     qtd = models.DecimalField(max_digits=10, decimal_places=3)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     valtab = models.DecimalField(max_digits=10, decimal_places=2)
-    id_produtos = models.PositiveIntegerField()
 
     class Meta:
         managed = False
@@ -1130,7 +1068,8 @@ class Locs(models.Model):
     tel2 = models.CharField(max_length=13, blank=True, null=True)
     ptref = models.CharField(max_length=30, blank=True, null=True)
     tot = models.DecimalField(max_digits=10, decimal_places=2)
-    vacr = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    vacr = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     vdesc = models.DecimalField(max_digits=10, decimal_places=2)
     totpg = models.DecimalField(max_digits=10, decimal_places=2)
     codusu = models.PositiveIntegerField()
@@ -1144,7 +1083,8 @@ class Locs(models.Model):
 
 
 class Logradouros(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     logr = models.CharField(max_length=20, blank=True, null=True)
     abrev = models.CharField(max_length=5, blank=True, null=True)
 
@@ -1202,7 +1142,8 @@ class MunicipiosIbge(models.Model):
 
 
 class Nfserv(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     instit = models.PositiveIntegerField(blank=True, null=True)
     sit = models.PositiveIntegerField()
     tcli = models.PositiveIntegerField()
@@ -1227,15 +1168,24 @@ class Nfserv(models.Model):
     cnae = models.PositiveIntegerField()
     obra = models.CharField(max_length=15, blank=True, null=True)
     art = models.CharField(max_length=15, blank=True, null=True)
-    pis = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    cofins = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    ir = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    inss = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    csll = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    desci = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    descc = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    issqn = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    pis = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    cofins = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    ir = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    inss = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    csll = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    desci = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    descc = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    issqn = models.DecimalField(
+        max_digits=4, decimal_places=2, blank=True, null=True)
     retid = models.PositiveIntegerField()
     quit = models.PositiveIntegerField(blank=True, null=True)
     dtquit = models.DateTimeField(blank=True, null=True)
@@ -1251,7 +1201,8 @@ class Nfserv(models.Model):
 
 
 class Obs(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     deleted = models.PositiveIntegerField()
     idpescod = models.PositiveIntegerField()
     data = models.DateTimeField()
@@ -1296,43 +1247,10 @@ class Orcamentos(models.Model):
         unique_together = (('instit', 'codorc'),)
 
 
-class Pedidos(models.Model):
-    sit = models.PositiveIntegerField()
-    instit = models.PositiveIntegerField()
-    codped = models.PositiveIntegerField()
-    dat = models.DateTimeField()
-    tven = models.PositiveIntegerField()
-    tcli = models.PositiveIntegerField()
-    ccli = models.PositiveIntegerField()
-    cli = models.CharField(max_length=50)
-    tend = models.PositiveIntegerField()
-    end = models.CharField(max_length=40, blank=True, null=True)
-    endnum = models.CharField(max_length=6, blank=True, null=True)
-    endcompl = models.CharField(max_length=30, blank=True, null=True)
-    bairro = models.CharField(max_length=30, blank=True, null=True)
-    cep = models.CharField(max_length=10, blank=True, null=True)
-    id_municipio = models.IntegerField()
-    id_pais = models.PositiveIntegerField()
-    tel1 = models.CharField(max_length=14, blank=True, null=True)
-    tel2 = models.CharField(max_length=13, blank=True, null=True)
-    ptref = models.CharField(max_length=30, blank=True, null=True)
-    tot = models.DecimalField(max_digits=10, decimal_places=2)
-    vacr = models.DecimalField(max_digits=10, decimal_places=2)
-    vdesc = models.DecimalField(max_digits=10, decimal_places=2)
-    totpg = models.DecimalField(max_digits=10, decimal_places=2)
-    codusu = models.PositiveIntegerField()
-    msg = models.CharField(max_length=30, blank=True, null=True)
-    msg2 = models.CharField(max_length=200, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'pedidos'
-        unique_together = (('instit', 'codped'),)
-
-
 class Permissao(models.Model):
     id_permissao = models.IntegerField(primary_key=True)
-    descricao_permissao = models.CharField(max_length=45, blank=True, null=True)
+    descricao_permissao = models.CharField(
+        max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -1346,7 +1264,9 @@ class Pescod(models.Model):
     sit = models.PositiveIntegerField()
     forn = models.PositiveIntegerField()
     cpfcnpj = models.CharField(max_length=18, blank=True, null=True)
-    nomeorrazaosocial = models.CharField(db_column='nomeOrRazaoSocial', unique=True, max_length=100, blank=True, null=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    nomeorrazaosocial = models.CharField(
+        db_column='nomeOrRazaoSocial', unique=True, max_length=100, blank=True, null=True)
     foto = models.CharField(max_length=25)
     img_bites = models.PositiveIntegerField()
     limite = models.DecimalField(max_digits=10, decimal_places=2)
@@ -1362,10 +1282,10 @@ class Pescod(models.Model):
 class Pesfis(models.Model):
     id_pessoa_fisica = models.AutoField(primary_key=True)
     id_pessoa_cod_fk = models.IntegerField()
-    identidade = models.CharField(max_length=20, blank=True, null=True)
-    emissor_identidade = models.CharField(max_length=50, blank=True, null=True)
-    id_municipio_fk = models.IntegerField(blank=True, null=True)
-    id_uf_municipio_fk = models.IntegerField(blank=True, null=True)
+    identidade = models.CharField(max_length=20)
+    emissor_identidade = models.CharField(max_length=50)
+    id_municipio_fk = models.IntegerField()
+    id_uf_municipio_fk = models.IntegerField()
     data_de_nascimento = models.DateField(blank=True, null=True)
     tratam = models.PositiveIntegerField()
     apelido = models.CharField(max_length=25, blank=True, null=True)
@@ -1408,7 +1328,8 @@ class Pesjur(models.Model):
     fantasia = models.CharField(max_length=50, blank=True, null=True)
     ramo = models.CharField(max_length=255, blank=True, null=True)
     inscricao_estadual = models.CharField(max_length=20, blank=True, null=True)
-    inscricao_municipal = models.CharField(max_length=20, blank=True, null=True)
+    inscricao_municipal = models.CharField(
+        max_length=20, blank=True, null=True)
     tipo_empresa = models.CharField(max_length=100, blank=True, null=True)
     capsocial = models.DecimalField(max_digits=15, decimal_places=2)
     faturamento = models.DecimalField(max_digits=15, decimal_places=2)
@@ -1424,7 +1345,8 @@ class Pesjur(models.Model):
 
 
 class PesjurSoc(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     deleted = models.PositiveIntegerField()
     idpescod = models.PositiveIntegerField()
     nome = models.CharField(max_length=60, blank=True, null=True)
@@ -1455,92 +1377,114 @@ class ProdGrp(models.Model):
         db_table = 'prod_grp'
 
 
-class ProdItens(models.Model):
-    id_produtos = models.PositiveIntegerField()
-    id_instit = models.PositiveIntegerField()
-    id_matriz = models.PositiveIntegerField()
-    codprod = models.PositiveIntegerField()
-    ativo = models.PositiveIntegerField(blank=True, null=True)
-    bxest = models.PositiveIntegerField()
-    est_minimo = models.DecimalField(max_digits=12, decimal_places=3)
-    est_fiscal = models.DecimalField(max_digits=12, decimal_places=3)
-    est_frente = models.DecimalField(max_digits=12, decimal_places=3)
-    est_dep1 = models.DecimalField(max_digits=12, decimal_places=3)
-    est_dep2 = models.DecimalField(max_digits=12, decimal_places=3)
-    est_dep3 = models.DecimalField(max_digits=12, decimal_places=3)
-    compra = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    frete = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    ipi = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    aliq = models.PositiveIntegerField()
-    custo = models.DecimalField(max_digits=10, decimal_places=2)
-    lucro = models.DecimalField(max_digits=10, decimal_places=2)
-    prvenda1 = models.DecimalField(max_digits=10, decimal_places=2)
-    prvenda2 = models.DecimalField(max_digits=10, decimal_places=2)
-    prvenda3 = models.DecimalField(max_digits=10, decimal_places=2)
-    locavel = models.PositiveIntegerField()
-    prloc = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    vdatac = models.PositiveIntegerField()
-    qtdatac = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    pratac = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    loc_frente = models.CharField(max_length=20, blank=True, null=True)
-    loc_dep1 = models.CharField(max_length=20, blank=True, null=True)
-    loc_dep2 = models.CharField(max_length=20, blank=True, null=True)
-    loc_dep3 = models.CharField(max_length=20, blank=True, null=True)
-    datatz = models.DateTimeField(blank=True, null=True)
-    usuatz = models.PositiveIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'prod_itens'
-        unique_together = (('id_instit', 'codprod'),)
-
-
 class Produtos(models.Model):
-    id_matriz = models.PositiveIntegerField()
+    instit = models.PositiveIntegerField()
+    matriz = models.PositiveIntegerField(blank=True, null=True)
     codprod = models.PositiveIntegerField()
-    ativo = models.PositiveIntegerField(blank=True, null=True)
-    descr = models.CharField(max_length=50)
+    nome = models.CharField(max_length=45)
+    ativo = models.PositiveIntegerField()
+    descr = models.CharField(max_length=50, blank=True, null=True)
     descres = models.CharField(max_length=25, blank=True, null=True)
     und = models.IntegerField()
-    grupo = models.PositiveIntegerField()
-    tam = models.DecimalField(max_digits=6, decimal_places=3)
-    larg = models.DecimalField(max_digits=6, decimal_places=3)
-    alt = models.DecimalField(max_digits=6, decimal_places=3)
-    cubag = models.DecimalField(max_digits=7, decimal_places=4)
-    peso = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    grupo = models.PositiveIntegerField(blank=True, null=True)
+    tam = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    larg = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    alt = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    cubag = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    peso_bruto = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    peso_liquido = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     codbarra = models.CharField(max_length=25, blank=True, null=True)
-    fabr = models.IntegerField()
+    fabr = models.IntegerField(blank=True, null=True)
     forn = models.PositiveIntegerField(blank=True, null=True)
     caract = models.CharField(max_length=50, blank=True, null=True)
-    ncm = models.CharField(max_length=8, blank=True, null=True)
-    cest = models.CharField(max_length=8, blank=True, null=True)
-    desnf = models.CharField(max_length=40)
+    ncm = models.CharField(max_length=20, blank=True, null=True)
+    cest = models.CharField(max_length=20, blank=True, null=True)
+    bxest = models.PositiveIntegerField()
+    minimo = models.PositiveIntegerField(blank=True, null=True)
+    fiscal = models.IntegerField(blank=True, null=True)
+    frente = models.IntegerField(blank=True, null=True)
+    deposito = models.IntegerField(blank=True, null=True)
+    compra = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    frete = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    ipi = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    aliq = models.PositiveIntegerField(blank=True, null=True)
+    custo = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    lucro = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    prvenda1 = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    prvenda2 = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    prvenda3 = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    locavel = models.PositiveIntegerField()
+    prloc = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    vdatac = models.PositiveIntegerField()
+    qtdatac = models.PositiveIntegerField(blank=True, null=True)
+    pratac = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    local = models.CharField(max_length=50, blank=True, null=True)
+    desnf = models.CharField(max_length=40, blank=True, null=True)
     foto = models.CharField(max_length=25)
     img_bites = models.PositiveIntegerField(blank=True, null=True)
     datatz = models.DateTimeField(blank=True, null=True)
     usuatz = models.PositiveIntegerField()
+    deletado = models.IntegerField()
+    data_criacao = models.DateTimeField()
+    data_atualizacao = models.DateTimeField(blank=True, null=True)
+    ean_tributavel = models.CharField(max_length=45, blank=True, null=True)
+    ex_tipi = models.CharField(max_length=45, blank=True, null=True)
+    estoque_maximo = models.IntegerField(blank=True, null=True)
+    qtd_tributavel = models.IntegerField(blank=True, null=True)
+    valor_uni_tributavel = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    qtd_comercial = models.IntegerField(blank=True, null=True)
+    valor_uni_comercial = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    icms_situacao_tributaria = models.IntegerField(blank=True, null=True)
+    icms_origem = models.IntegerField(blank=True, null=True)
+    id_pis = models.IntegerField(blank=True, null=True)
+    id_cofins = models.IntegerField(blank=True, null=True)
+    id_ipi = models.IntegerField(blank=True, null=True)
+    status_destaque = models.IntegerField()
 
     class Meta:
         managed = False
         db_table = 'produtos'
-        unique_together = (('id_matriz', 'descr'), ('id_matriz', 'codbarra'), ('id_matriz', 'codprod'),)
+        unique_together = (('codprod', 'instit'),)
 
 
 class Recpro(models.Model):
-    id = models.PositiveIntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.PositiveIntegerField(db_column='Id', primary_key=True)
     instit = models.PositiveIntegerField()
     idpescod = models.PositiveIntegerField(blank=True, null=True)
     data = models.DateTimeField(blank=True, null=True)
-    valor = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    qtd = models.DecimalField(max_digits=9, decimal_places=3, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    qtd = models.DecimalField(
+        max_digits=9, decimal_places=3, blank=True, null=True)
     g_con = models.PositiveIntegerField(blank=True, null=True)
     p_dat = models.DateTimeField(blank=True, null=True)
     p_num = models.CharField(max_length=20, blank=True, null=True)
-    p_val = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    p_val = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
     p_ven = models.CharField(max_length=20, blank=True, null=True)
     n_dat = models.DateTimeField(blank=True, null=True)
     n_num = models.CharField(max_length=20, blank=True, null=True)
-    n_val = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    n_val = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
     dtz = models.DateTimeField(blank=True, null=True)
     usuario = models.CharField(max_length=10, blank=True, null=True)
 
@@ -1583,16 +1527,10 @@ class Referencias(models.Model):
 
 
 class Rotinas(models.Model):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    descr = models.CharField(max_length=60)
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
+    descr = models.CharField(max_length=40)
     sit = models.PositiveIntegerField()
-    ordem = models.PositiveIntegerField(unique=True)
-    posicao_rotina = models.PositiveIntegerField()
-    modulo = models.PositiveIntegerField(blank=True, null=True)
-    menu = models.PositiveIntegerField()
-    tipomenu = models.PositiveIntegerField()
-    action = models.CharField(max_length=40, blank=True, null=True)
-    img = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -1600,11 +1538,13 @@ class Rotinas(models.Model):
 
 
 class Sac(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     cliente = models.CharField(max_length=50, blank=True, null=True)
     ref = models.CharField(max_length=20, blank=True, null=True)
     data = models.DateTimeField(blank=True, null=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    valor = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     contato = models.CharField(max_length=150, blank=True, null=True)
     atendente = models.CharField(max_length=20, blank=True, null=True)
     instit = models.PositiveIntegerField(blank=True, null=True)
@@ -1619,7 +1559,8 @@ class Sac(models.Model):
 
 
 class Sangria(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     instit = models.PositiveIntegerField()
     dat = models.DateTimeField()
     emi = models.CharField(max_length=40)
@@ -1674,7 +1615,8 @@ class Telefones(models.Model):
 
 
 class Temp(models.Model):
-    id = models.IntegerField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.IntegerField(db_column='Id', primary_key=True)
     v1 = models.CharField(max_length=5, blank=True, null=True)
     v2 = models.CharField(max_length=100, blank=True, null=True)
 
@@ -1687,8 +1629,10 @@ class TransfI(models.Model):
     id = models.IntegerField(primary_key=True)
     prod = models.PositiveIntegerField()
     loja = models.PositiveIntegerField()
-    frente = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
-    deposito = models.DecimalField(max_digits=10, decimal_places=3, blank=True, null=True)
+    frente = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    deposito = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True)
     dat = models.DateTimeField()
     user = models.PositiveIntegerField()
 
@@ -1722,7 +1666,8 @@ class UserSenha(models.Model):
 
 
 class Users(models.Model):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
+    # Field name made lowercase.
+    id = models.AutoField(db_column='Id', primary_key=True)
     idpescod = models.PositiveIntegerField()
     instit = models.PositiveIntegerField()
     ativo = models.PositiveIntegerField()
@@ -1765,7 +1710,7 @@ class UsersGrp(models.Model):
     id_grupo = models.AutoField(primary_key=True)
     grupo = models.CharField(max_length=15)
     instit = models.IntegerField()
-    acess = models.CharField(max_length=255)
+    acess = models.CharField(max_length=100)
     data_criacao = models.DateTimeField(blank=True, null=True)
     data_atualizacao = models.DateTimeField(blank=True, null=True)
 
@@ -1773,60 +1718,6 @@ class UsersGrp(models.Model):
         managed = False
         db_table = 'users_grp'
         unique_together = (('instit', 'grupo'),)
-
-
-class UsersUsers(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=15)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30, blank=True, null=True)
-    email = models.CharField(max_length=255)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-    is_trusty = models.IntegerField()
-    ativo = models.PositiveIntegerField()
-    login = models.CharField(max_length=25, blank=True, null=True)
-    nome = models.CharField(max_length=25, blank=True, null=True)
-    numlog = models.PositiveIntegerField(blank=True, null=True)
-    senha = models.CharField(max_length=20, blank=True, null=True)
-    acess = models.CharField(max_length=255)
-    desenv = models.PositiveIntegerField(blank=True, null=True)
-    datsenha = models.DateTimeField(blank=True, null=True)
-    data_criacao = models.DateTimeField(blank=True, null=True)
-    data_atualizacao = models.DateTimeField(blank=True, null=True)
-    data_de_exclusao = models.DateTimeField(blank=True, null=True)
-    idgrp_id = models.IntegerField()
-    idpescod_id = models.IntegerField()
-    instit_id = models.IntegerField()
-    foto = models.CharField(max_length=100, blank=True, null=True)
-    is_deleted = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'users_users'
-
-
-class UsersUsersGroups(models.Model):
-    users = models.ForeignKey(UsersUsers, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'users_users_groups'
-        unique_together = (('users', 'group'),)
-
-
-class UsersUsersUserPermissions(models.Model):
-    users = models.ForeignKey(UsersUsers, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'users_users_user_permissions'
-        unique_together = (('users', 'permission'),)
 
 
 class Vales(models.Model):

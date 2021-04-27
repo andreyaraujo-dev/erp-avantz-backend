@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'bancos.apps.BancosConfig',
     'users_groups.apps.UsersGroupsConfig',
     'municipios.apps.MunicipiosConfig',
+    'produtos.apps.ProdutosConfig'
 ]
 
 MIDDLEWARE = [
