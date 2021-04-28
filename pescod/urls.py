@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (index, delete, store_person_physical, details_physical_person, find_physical_persons, find_legal_persons,
-                    store_legal_person, details_legal_person, edit_legal_person, edit_person_physical)
+                    store_legal_person, details_legal_person, edit_legal_person, edit_person_physical, find_providers)
 
 urlpatterns = [
     path('', index, name='list_all_persons'),
@@ -24,4 +24,6 @@ urlpatterns = [
          details_legal_person, name='details_legal_persons'),
     path('legal/edit/<int:id_person>',
          edit_legal_person, name='edit_legal_persons'),
+
+    path('providers', find_providers, name='find_providers'),
 ]

@@ -93,6 +93,21 @@ def find_legal_persons(request, personName=None):
             raise exceptions.APIException
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def find_providers(request):
+    id_institution = request.user.instit_id
+    try:
+        persons = Pescod.objects.filter(
+            id_instituicao_fk=id_institution, sit=2, forn=1)
+        persons_serialized = PescodSerializer(persons, many=True)
+        return Response(persons_serialized.data)
+    except:
+        raise exceptions.APIException
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
