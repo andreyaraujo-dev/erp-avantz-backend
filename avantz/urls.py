@@ -36,6 +36,7 @@ from bancos import urls as bancos_urls
 from municipios import urls as municipios_urls
 from produtos import urls as produtos_urls
 from unidade_produto import urls as unidades_urls
+from fabricante_produto import urls as fabricante_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -70,6 +71,7 @@ urlpatterns = [
     path('counties/', include(municipios_urls)),
     path('products/', include(produtos_urls)),
     path('units/', include(unidades_urls)),
+    path('fabricator/', include(fabricante_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls

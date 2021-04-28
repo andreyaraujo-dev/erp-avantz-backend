@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'municipios.apps.MunicipiosConfig',
     'produtos.apps.ProdutosConfig',
     'unidade_produto.apps.UnidadeProdutoConfig',
+    'fabricante_produto.apps.FabricanteProdutoConfig'
 ]
 
 MIDDLEWARE = [
