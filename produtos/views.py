@@ -13,6 +13,8 @@ from .models import Produtos
 from .serializers import ProdutoSerializer
 from instituicao.views import search_matriz
 
+from detalhes_produto.models import ProdItens
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -38,13 +40,19 @@ def get_all(request):
 def find_products_by_name(request, name):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
+    estoque = []
 
     try:
         produtos = Produtos.objects.filter(
             id_matriz=id_matriz, descres__contains=name)
         produtos_serialized = ProdutoSerializer(produtos, many=True)
 
-        return Response(produtos_serialized.data)
+        for produto in produtos_serialized.data:
+            dados = ProdItens.objects.filter(id_instit=id_institution, ativo=2, id_produtos=produto['id']).values(
+                'id', 'id_produtos', 'est_frente', 'prvenda1', 'prvenda2', 'prvenda3', 'locavel').get()
+            estoque.append(dados)
+
+        return Response({'produtos': produtos_serialized.data, 'estoque': estoque})
     except:
         raise exceptions.APIException(
             'Não foi possível encontrar os produtos.', status.HTTP_500_INTERNAL_SERVER_ERROR)
