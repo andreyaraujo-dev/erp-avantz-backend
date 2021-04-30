@@ -897,3 +897,33 @@ def edit_person_physical(request, id_person):
                 'Não foi possível atualizar os dados de refenrências bancárias')
 
     return Response({'detail': 'Atualização feita com sucesso'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+def find_last_physical_person(request):
+    id_institution = request.user.instit_id
+    try:
+        persons = Pescod.objects.filter(
+            id_instituicao_fk=id_institution, sit=2, tipo=1).order_by('-id_pessoa_cod')[:5]
+        persons_serialized = PescodSerializer(persons, many=True)
+        return Response(persons_serialized.data)
+    except:
+        raise exceptions.APIException
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+def find_last_providers(request):
+    id_institution = request.user.instit_id
+    try:
+        persons = Pescod.objects.filter(
+            id_instituicao_fk=id_institution, sit=2, forn=1).order_by('-id_pessoa_cod')[:5]
+        persons_serialized = PescodSerializer(persons, many=True)
+        return Response(persons_serialized.data)
+    except:
+        raise exceptions.APIException
