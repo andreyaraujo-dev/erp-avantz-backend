@@ -31,6 +31,7 @@ class Instit(models.Model):
     class Meta:
         managed = False
         db_table = 'instit'
+        ordering = ['nome', ]
 
     def __str__(self):
         return self.nome
