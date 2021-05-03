@@ -335,6 +335,23 @@ def upload_image(request):
         return Response({"detail": exceptions.APIException}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def get_access(request):
+    User = get_user_model()
+    user_id = request.user.id
+
+    try:
+        access = User.objects.filter(id=user_id).values('acess').get()
+
+        return Response(access)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível retornar as permissões do usuário.')
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     User = get_user_model()
     """
