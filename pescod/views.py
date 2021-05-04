@@ -28,6 +28,7 @@ from referencias.models import Referencias
 from referencias.serializers import ReferenciasSerializers
 from ref_bancarias.models import Refbanco
 from ref_bancarias.serializers import RefBancoSerializers
+from users.utils import verify_permission
 
 
 @api_view(['GET'])
@@ -51,6 +52,12 @@ def index(request):
 @ensure_csrf_cookie
 def find_physical_persons(request, personName=None):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(40, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     if personName == None:
         try:
             persons = Pescod.objects.filter(
@@ -75,6 +82,12 @@ def find_physical_persons(request, personName=None):
 @ensure_csrf_cookie
 def find_legal_persons(request, personName=None):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(41, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     if personName == None:
         try:
             persons = Pescod.objects.filter(
@@ -115,6 +128,12 @@ def find_providers(request):
 @transaction.atomic
 def store_person_physical(request):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(72, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     cpf = request.data.get('cpfcnpj')
     """  
     FIND CPF ON DATABASE. IF EXIST, NO REGISTER AND RETURN
@@ -277,6 +296,11 @@ def store_person_physical(request):
 @transaction.atomic
 def delete(request, id_person):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(135, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     person = Pescod.objects.filter(id_pessoa_cod=id_person, sit=2).first()
     if not person:
@@ -308,6 +332,11 @@ def delete(request, id_person):
 @ensure_csrf_cookie
 def details_physical_person(request, id_person):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(136, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     # LIST OF THE POSSIBLE SEARCH ERRORS IN THE DATA OF THE PERSON SEARCHED
     details = []
@@ -389,6 +418,12 @@ def details_physical_person(request, id_person):
 @transaction.atomic
 def store_legal_person(request):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(81, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     cnpj = request.data.get('personCNPJ')
     """  
     FIND CPF ON DATABASE. IF EXIST, NO REGISTER AND RETURN
@@ -515,6 +550,12 @@ def store_legal_person(request):
 @authentication_classes([SafeJWTAuthentication])
 @ensure_csrf_cookie
 def details_legal_person(request, id_person):
+    user_id = request.user.id
+
+    if not verify_permission(138, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     # LIST OF THE POSSIBLE SEARCH ERRORS IN THE DATA OF THE PERSON SEARCHED
     details = []
 
@@ -595,6 +636,11 @@ def details_legal_person(request, id_person):
 @transaction.atomic
 def edit_legal_person(request, id_person):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(4, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     """  
     FIND PERSON ON DATABASE. IF NOT EXISTS, NO EDIT AND RETURN
@@ -736,6 +782,12 @@ def edit_legal_person(request, id_person):
 @transaction.atomic
 def edit_person_physical(request, id_person):
     id_institution = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(2, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     """  
     FIND CPF ON DATABASE. IF NO EXISTS, NO UPDATE AND RETURN
     """

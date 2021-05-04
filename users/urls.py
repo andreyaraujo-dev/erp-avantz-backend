@@ -1,7 +1,7 @@
 from .viewset import UserViewSet
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import profile, login, register, ChangePasswordView, edit, list_all, admin_edit, disabled_user, details, upload_image, delete
+from .views import profile, login, register, ChangePasswordView, edit, list_all, admin_edit, disabled_user, details, upload_image, delete, get_access
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
@@ -21,6 +21,7 @@ urlpatterns = [
     path('delete/<int:id>', delete, name='delete_user'),
     path('disable/<int:id>', disabled_user, name='disable_user'),
     path('details/<int:id>', details, name='details'),
+    path('access', get_access, name='get_access'),
 ]
 
 urlpatterns += router.urls
