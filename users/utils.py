@@ -1,6 +1,7 @@
 import datetime
 import jwt
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 
 def generate_access_token(user):
@@ -24,3 +25,13 @@ def generate_refresh_token(user):
         refresh_token_payload, settings.REFRESH_TOKEN_SECRET, algorithm='HS256').decode('utf-8')
 
     return refresh_token
+
+
+def verify_permission(position, user_id):
+    User = get_user_model()
+    access_user = User.objects.filter(id=user_id).values('acess').get()
+
+    if (access_user['acess'][position - 1] == '1'):
+        return True
+    else:
+        return False

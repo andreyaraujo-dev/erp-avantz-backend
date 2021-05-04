@@ -13,6 +13,7 @@ from .utils import generate_access_token, generate_refresh_token
 from .authentication import SafeJWTAuthentication
 from instituicao.models import Instit
 from django.db import transaction
+from .utils import verify_permission
 
 
 @api_view(['GET'])
@@ -81,7 +82,10 @@ def login(request):
     #                     samesite='None', secure=True, httponly=True)
     response.data = {
         'access_token': access_token,
-        'user': serialized_user,
+        'user': {
+            'id': serialized_user['id'],
+            'first_name': serialized_user['first_name'],
+        },
         'institution': instituicao.nome
     }
 
@@ -135,6 +139,12 @@ def refresh_token_view(request):
 @transaction.atomic
 def register(request):
     User = get_user_model()
+    user_id = request.user.id
+
+    if not verify_permission(15, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     username = request.data.get('username')
     password = request.data.get('password')
     first_name = request.data.get('firstName')
@@ -191,6 +201,12 @@ def edit(request):
 def list_all(request, userName=None):
     User = get_user_model()
     id_instit = request.user.instit_id
+    user_id = request.user.id
+
+    if not verify_permission(97, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
     if userName == None:
         try:
             users = User.objects.filter(instit_id=id_instit, is_deleted=0)
@@ -216,6 +232,11 @@ def list_all(request, userName=None):
 @authentication_classes([SafeJWTAuthentication])
 @transaction.atomic
 def admin_edit(request, id):
+    user_id = request.user.id
+
+    if not verify_permission(132, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
     """ 
     FUNCTION FOR THE ADMINISTRATOR TO EDIT THE USER DATA OF THEIR RESPECTIVE INSTITUTION
     """
@@ -254,6 +275,11 @@ def disabled_user(request, id):
     User = get_user_model()
     id_instit = request.user.instit_id
     # user_id = request.data.get('userId')
+    user_id = request.user.id
+
+    if not verify_permission(133, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     user = User.objects.filter(
         id=id, ativo=1, is_active=1, is_deleted=0).first()
@@ -282,6 +308,11 @@ def delete(request, id):
     User = get_user_model()
     id_instit = request.user.instit_id
     # user_id = request.data.get('userId')
+    user_id = request.user.id
+
+    if not verify_permission(133, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     user = User.objects.filter(
         id=id, is_deleted=0).first()
@@ -306,6 +337,11 @@ def delete(request, id):
 @ensure_csrf_cookie
 def details(request, id):
     User = get_user_model()
+    user_id = request.user.id
+
+    if not verify_permission(134, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         user = User.objects.get(pk=id)
