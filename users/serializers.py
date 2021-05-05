@@ -10,7 +10,7 @@ class UsersSerializers(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'foto',
-                  'date_joined', 'idpescod_id', 'instit_id', 'idgrp_id', 'acess', 'is_active']
+                  'date_joined', 'idpescod_id', 'instit_id', 'idgrp_id', 'acess', 'is_active', 'is_superuser', ]
 
 
 class ChangePasswordSerializer(serializers.Serializer):

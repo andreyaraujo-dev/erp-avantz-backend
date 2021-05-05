@@ -167,6 +167,51 @@ def register(request):
         raise exceptions.APIException('Não foi possível cadastrar o usuário')
 
 
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@transaction.atomic
+def register_superuser(request):
+    User = get_user_model()
+    user_id = request.user.id
+
+    if not verify_permission(15, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
+    username = request.data.get('username')
+    password = request.data.get('password')
+    first_name = request.data.get('firstName')
+    last_name = request.data.get('lastName')
+    email = request.data.get('email')
+    person_id = request.data.get('idPerson')
+    institution_id = request.data.get('idInstitution')
+    group_id = request.data.get('idGroup')
+    active = request.data.get('active')
+    access = request.data.get('access')
+    response = Response()
+
+    try:
+        user = User.objects.create_superuser(
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            idpescod=person_id,
+            instit=institution_id,
+            idgrp=group_id,
+            ativo=active,
+            acess=access
+        )
+        user.save()
+        serialized_user = UsersSerializers(user)
+        return Response({'user': serialized_user.data})
+    except:
+        raise exceptions.APIException('Não foi possível cadastrar o usuário')
+
+
 @api_view(['POST', 'PUT'])
 @csrf_exempt
 @permission_classes([IsAuthenticated])
