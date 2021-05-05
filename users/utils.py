@@ -35,3 +35,13 @@ def verify_permission(position, user_id):
         return True
     else:
         return False
+
+
+def check_superuser(user_id):
+    User = get_user_model()
+    user_logged = User.objects.filter(id=user_id).values('is_superuser').get()
+
+    if(user_logged['is_superuser'] == 1):
+        return True
+    else:
+        return False
