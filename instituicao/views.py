@@ -4,6 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt, csrf_p
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
+from django.db import transaction
 
 from .models import Instit
 from .serializers import InstituicaoSerializer
@@ -61,38 +62,62 @@ def get_all(request, name=None):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @csrf_exempt
+@transaction.atomic
 def create(request):
     user_id = request.user.id
-
+    print(f'id usuario', user_id)
     if not check_superuser(user_id):
         raise exceptions.PermissionDenied(
             'Você não tem permissões para realizar esta operação.')
+    print('tem permissao')
 
-    id_pessoa_juridica = request.data.get('idLegalPerson')
-    nome = request.data.get('name')
-    razao_social = request.data.get('companyName')
-    rua = request.data.get('street')
-    numero = request.data.get('numberAddress')
-    complemento = request.data.get('complement')
-    bairro = request.data.get('neighborhood')
-    cep = request.data.get('zipCode')
-    cidade = request.data.get('city')
-    uf = request.data.get('UF')
-    cnpj = request.data.get('CNPJ')
-    inscricao_estadual = request.data.get('stateRegistration')
-    inscricao_municipal = request.data.get('municipalRegistration')
+    id_pessoa_juridica = request.data.get('idpjur')
+    print(id_pessoa_juridica)
+    ativo = request.data.get('ativo')
+    print(ativo)
+    nome = request.data.get('nome')
+    print(nome)
+    razao_social = request.data.get('razsoc')
+    print(razao_social)
+    rua = request.data.get('end')
+    print(rua)
+    numero = request.data.get('endnum')
+    print(numero)
+    complemento = request.data.get('endcompl')
+    print(complemento)
+    bairro = request.data.get('bairro')
+    print(bairro)
+    cep = request.data.get('cep')
+    print(cep)
+    cidade = request.data.get('cidade')
+    print(cidade)
+    uf = request.data.get('uf')
+    print(uf)
+    cnpj = request.data.get('cnpj')
+    print(cnpj)
+    inscricao_estadual = request.data.get('iest')
+    print(inscricao_estadual)
+    inscricao_municipal = request.data.get('imun')
+    print(inscricao_municipal)
     email1 = request.data.get('mail1')
+    print(email1)
     email2 = request.data.get('mail2')
-    telefone1 = request.data.get('phone1')
-    telefone2 = request.data.get('phone2')
-    telefone3 = request.data.get('phone3')
+    print(email2)
+    telefone1 = request.data.get('tel1')
+    print(telefone1)
+    telefone2 = request.data.get('tel2')
+    print(telefone2)
+    telefone3 = request.data.get('tel3')
+    print(telefone3)
     slogan = request.data.get('slogan')
-    modulos = request.data.get('modules')
+    print(slogan)
+    modulos = request.data.get('modulos')
+    print(modulos)
 
     try:
         institution = Instit(
             idpjur=id_pessoa_juridica,
-            ativo=1,
+            ativo=ativo,
             nome=nome,
             razsoc=razao_social,
             end=rua,
@@ -115,6 +140,17 @@ def create(request):
         )
 
         institution.save()
+        print(f'salvou 1', institution)
+
+        if request.data.get('idmatriz') != 0:
+            institution.idmatriz = request.data.get('idmatriz')
+            print('matriz 0')
+        else:
+            institution.idmatriz = institution.id_instituicao
+            print('matriz id instit')
+
+        institution.save()
+        print(f'salvou 2', institution)
 
         return Response({'detail': 'Cadastro feito com sucesso'})
     except:
@@ -134,7 +170,7 @@ def details(request, id):
             'Você não tem permissões para realizar esta operação.')
 
     try:
-        institution = Instit.objects.filter(id_instituicao=id, ativo=1).first()
+        institution = Instit.objects.filter(id_instituicao=id).first()
         institution_serialized = InstituicaoSerializer(institution)
 
         return Response(institution_serialized.data)
@@ -147,6 +183,7 @@ def details(request, id):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @csrf_exempt
+@transaction.atomic
 def update(request, id):
     user_id = request.user.id
 
@@ -155,28 +192,29 @@ def update(request, id):
             'Você não tem permissões para realizar esta operação.')
 
     try:
-        institution = Instit.objects.filter(id_instituicao=id, ativo=1).first()
+        institution = Instit.objects.filter(id_instituicao=id).first()
 
-        institution.ativo = request.data.get('active')
-        institution.nome = request.data.get('name')
-        institution.razsoc = request.data.get('companyName')
-        institution.end = request.data.get('street')
-        institution.endnum = request.data.get('numberAddress')
-        institution.endcompl = request.data.get('complement')
-        institution.bairro = request.data.get('neighborhood')
-        institution.cep = request.data.get('zipCode')
-        institution.cidade = request.data.get('city')
-        institution.uf = request.data.get('UF')
-        institution.cnpj = request.data.get('CNPJ')
-        institution.iest = request.data.get('stateRegistration')
-        institution.imun = request.data.get('municipalRegistration')
+        institution.idmatriz = request.data.get('idmatriz')
+        institution.ativo = request.data.get('ativo')
+        institution.nome = request.data.get('nome')
+        institution.razsoc = request.data.get('razsoc')
+        institution.end = request.data.get('end')
+        institution.endnum = request.data.get('endnum')
+        institution.endcompl = request.data.get('endcompl')
+        institution.bairro = request.data.get('bairro')
+        institution.cep = request.data.get('cep')
+        institution.cidade = request.data.get('cidade')
+        institution.uf = request.data.get('uf')
+        institution.cnpj = request.data.get('cnpj')
+        institution.iest = request.data.get('iest')
+        institution.imun = request.data.get('imun')
         institution.mail1 = request.data.get('mail1')
         institution.mail2 = request.data.get('mail2')
-        institution.tel1 = request.data.get('phone1')
-        institution.tel2 = request.data.get('phone2')
-        institution.tel3 = request.data.get('phone3')
+        institution.tel1 = request.data.get('tel1')
+        institution.tel2 = request.data.get('tel2')
+        institution.tel3 = request.data.get('tel3')
         institution.slogan = request.data.get('slogan')
-        institution.modulos = request.data.get('modules')
+        institution.modulos = request.data.get('modulos')
 
         institution.save()
 
@@ -199,12 +237,14 @@ def deactivate(request, id):
 
     try:
         institution = Instit.objects.filter(id_instituicao=id, ativo=1).first()
-
         institution.ativo = 0
-
         institution.save()
 
-        return Response({'details': 'Instituição desativada com sucesso.'})
+        institutions = Instit.objects.all()
+        institutions_serialized = InstituicaoSerializer(
+            institutions, many=True)
+
+        return Response(institutions_serialized.data)
     except:
         raise exceptions.APIException(
             'Não foi possível desativar a instituição, tente novamente.')
