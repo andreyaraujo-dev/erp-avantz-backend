@@ -78,8 +78,8 @@ def create(request):
     complemento = request.data.get('endcompl')
     bairro = request.data.get('bairro')
     cep = request.data.get('cep')
-    cidade = request.data.get('cidade')
-    uf = request.data.get('uf')
+    id_municipio = request.data.get('id_municipio')
+    uf = request.data.get('id_uf')
     cnpj = request.data.get('cnpj')
     inscricao_estadual = request.data.get('iest')
     inscricao_municipal = request.data.get('imun')
@@ -104,8 +104,8 @@ def create(request):
             endcompl=complemento,
             bairro=bairro,
             cep=cep,
-            cidade=cidade,
-            uf=uf,
+            id_uf=uf,
+            id_municipio=id_municipio,
             cnpj=cnpj,
             iest=inscricao_estadual,
             imun=inscricao_municipal,
@@ -169,7 +169,11 @@ def update(request, id):
     try:
         institution = Instit.objects.filter(id_instituicao=id).first()
 
-        institution.idmatriz = request.data.get('idmatriz')
+        if (request.data.get('idmatriz') == 0):
+            institution.idmatriz = id
+        else:
+            institution.idmatriz = request.data.get('idmatriz')
+
         institution.ativo = request.data.get('ativo')
         institution.nome = request.data.get('nome')
         institution.razsoc = request.data.get('razsoc')
@@ -178,8 +182,8 @@ def update(request, id):
         institution.endcompl = request.data.get('endcompl')
         institution.bairro = request.data.get('bairro')
         institution.cep = request.data.get('cep')
-        institution.cidade = request.data.get('cidade')
-        institution.uf = request.data.get('uf')
+        institution.id_uf = request.data.get('id_uf')
+        institution.id_municipio = request.data.get('id_municipio')
         institution.cnpj = request.data.get('cnpj')
         institution.iest = request.data.get('iest')
         institution.imun = request.data.get('imun')
