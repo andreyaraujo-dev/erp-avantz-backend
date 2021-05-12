@@ -65,61 +65,40 @@ def get_all(request, name=None):
 @transaction.atomic
 def create(request):
     user_id = request.user.id
-    print(f'id usuario', user_id)
     if not check_superuser(user_id):
         raise exceptions.PermissionDenied(
             'Você não tem permissões para realizar esta operação.')
-    print('tem permissao')
 
     id_pessoa_juridica = request.data.get('idpjur')
-    print(id_pessoa_juridica)
     ativo = request.data.get('ativo')
-    print(ativo)
     nome = request.data.get('nome')
-    print(nome)
     razao_social = request.data.get('razsoc')
-    print(razao_social)
     rua = request.data.get('end')
-    print(rua)
     numero = request.data.get('endnum')
-    print(numero)
     complemento = request.data.get('endcompl')
-    print(complemento)
     bairro = request.data.get('bairro')
-    print(bairro)
     cep = request.data.get('cep')
-    print(cep)
     cidade = request.data.get('cidade')
-    print(cidade)
     uf = request.data.get('uf')
-    print(uf)
     cnpj = request.data.get('cnpj')
-    print(cnpj)
     inscricao_estadual = request.data.get('iest')
-    print(inscricao_estadual)
     inscricao_municipal = request.data.get('imun')
-    print(inscricao_municipal)
     email1 = request.data.get('mail1')
-    print(email1)
     email2 = request.data.get('mail2')
-    print(email2)
     telefone1 = request.data.get('tel1')
-    print(telefone1)
     telefone2 = request.data.get('tel2')
-    print(telefone2)
     telefone3 = request.data.get('tel3')
-    print(telefone3)
     slogan = request.data.get('slogan')
-    print(slogan)
     modulos = request.data.get('modulos')
-    print(modulos)
 
     try:
         institution = Instit(
             idpjur=id_pessoa_juridica,
+            idmatriz=0,
             ativo=ativo,
             nome=nome,
             razsoc=razao_social,
+            endtip=1,
             end=rua,
             endnum=numero,
             endcompl=complemento,
@@ -140,17 +119,13 @@ def create(request):
         )
 
         institution.save()
-        print(f'salvou 1', institution)
 
         if request.data.get('idmatriz') != 0:
             institution.idmatriz = request.data.get('idmatriz')
-            print('matriz 0')
         else:
             institution.idmatriz = institution.id_instituicao
-            print('matriz id instit')
 
         institution.save()
-        print(f'salvou 2', institution)
 
         return Response({'detail': 'Cadastro feito com sucesso'})
     except:

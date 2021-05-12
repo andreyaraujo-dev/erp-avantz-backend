@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Instit(models.Model):
-    id_instituicao = models.IntegerField(primary_key=True)
+    id_instituicao = models.AutoField(primary_key=True)
     idmatriz = models.PositiveIntegerField()
     idpjur = models.PositiveIntegerField()
     ativo = models.PositiveIntegerField()
