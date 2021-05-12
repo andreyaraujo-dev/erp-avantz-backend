@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Instit(models.Model):
-    id_instituicao = models.IntegerField(primary_key=True)
+    id_instituicao = models.AutoField(primary_key=True)
     idmatriz = models.PositiveIntegerField()
     idpjur = models.PositiveIntegerField()
     ativo = models.PositiveIntegerField()
@@ -14,8 +14,8 @@ class Instit(models.Model):
     endcompl = models.CharField(max_length=30, blank=True, null=True)
     bairro = models.CharField(max_length=40, blank=True, null=True)
     cep = models.CharField(max_length=10, blank=True, null=True)
-    cidade = models.PositiveIntegerField()
-    uf = models.PositiveIntegerField()
+    id_uf = models.PositiveIntegerField()
+    id_municipio = models.PositiveIntegerField()
     cnpj = models.CharField(max_length=18, blank=True, null=True)
     iest = models.CharField(max_length=25, blank=True, null=True)
     imun = models.CharField(max_length=10, blank=True, null=True)

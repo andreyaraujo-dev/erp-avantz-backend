@@ -55,3 +55,21 @@ def select_ufs(request):
     except:
         raise exceptions.APIException(
             'Não foi possível pesquisar os municípios', code=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@ensure_csrf_cookie
+def select_cities(request, uf_id):
+    try:
+        countie = Municipios.objects.filter(
+            id_municipios=uf_id).values('uf_sigla').first()
+
+        cities = Municipios.objects.filter(uf_sigla=countie['uf_sigla'])
+        cities_serialized = MunicipiosSerializer(cities, many=True)
+
+        return Response(cities_serialized.data)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível retornar os dados dos Municípios.')

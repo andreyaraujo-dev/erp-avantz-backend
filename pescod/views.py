@@ -9,8 +9,6 @@ from datetime import datetime
 from django.utils import timezone
 from django.db import transaction
 
-import sys
-
 from users.authentication import SafeJWTAuthentication
 from .serializers import PescodSerializer
 from .models import Pescod
