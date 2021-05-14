@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'fabricante_produto.apps.FabricanteProdutoConfig',
     'detalhes_produto.apps.DetalhesProdutoConfig',
     'configuracoes_instituicao.apps.ConfiguracoesInstituicaoConfig',
+    'produtos_grupos.apps.ProdutosGruposConfig',
 ]
 
 MIDDLEWARE = [

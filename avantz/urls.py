@@ -41,6 +41,7 @@ from detalhes_produto import urls as detalhes_produto_urls
 from configuracoes_instituicao import urls as configuracoes_urls
 from instituicao import urls as institution_urls
 from produtos_itens import urls as produtos_itens_urls
+from produtos_grupos import urls as produtos_grupos_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -75,6 +76,7 @@ urlpatterns = [
     path('counties/', include(municipios_urls)),
     path('products/', include(produtos_urls)),
     path('prod-items/', include(produtos_itens_urls)),
+    path('prod-groups/', include(produtos_grupos_urls)),
     path('units/', include(unidades_urls)),
     path('fabricator/', include(fabricante_urls)),
     path('stock/', include(detalhes_produto_urls)),
