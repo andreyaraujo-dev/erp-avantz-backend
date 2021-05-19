@@ -53,7 +53,11 @@ def create(request):
 
         fabricante.save()
 
-        return Response({'detail': 'Fabricante adicionado com sucesso.'})
+        fabricantes = Fabpro.objects.filter(instit=id_matriz)
+        fabricantes_serialized = FabricanteProdutoSerializer(
+            fabricantes, many=True)
+
+        return Response(fabricantes_serialized.data)
     except:
         raise exceptions.APIException(
             'Não foi possível cadastrar o fabricante, tente novamente')
@@ -76,7 +80,11 @@ def delete(request, id):
         fabricante = Fabpro.objects.filter(instit=id_matriz, id=id)
         fabricante.delete()
 
-        return Response({'detail': 'Fabricante deletado com sucesso.'})
+        fabricantes = Fabpro.objects.filter(instit=id_matriz)
+        fabricantes_serialized = FabricanteProdutoSerializer(
+            fabricantes, many=True)
+
+        return Response(fabricantes_serialized.data)
     except:
         raise exceptions.APIException(
             'Não foi possível remover o registro de fabricante, tente novamente.')
@@ -102,7 +110,11 @@ def update(request, id):
 
         fabricante.save()
 
-        return Response({'detail': 'Fabricante atualizado com sucesso.'})
+        fabricantes = Fabpro.objects.filter(instit=id_matriz)
+        fabricantes_serialized = FabricanteProdutoSerializer(
+            fabricantes, many=True)
+
+        return Response(fabricantes_serialized.data)
     except:
         raise exceptions.APIException(
             'Não foi possível atualizar o registro de fabricante, tente novamente.')
@@ -146,12 +158,12 @@ def find_by_brand(request, brand):
     #         'Você não tem permissões para realizar esta operação.')
 
     fabricante = Fabpro.objects.filter(
-        instit=id_matriz, marca__contains=brand).first()
+        instit=id_matriz, marca__contains=brand)
 
     if not fabricante:
         raise exceptions.NotFound(
             'Nenhum fabricante foi encontrado com esta marca')
 
-    fabricante_serialized = FabricanteProdutoSerializer(fabricante)
+    fabricante_serialized = FabricanteProdutoSerializer(fabricante, many=True)
 
     return Response(fabricante_serialized.data)

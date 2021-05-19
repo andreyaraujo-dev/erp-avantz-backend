@@ -27,7 +27,8 @@ def get_all(request):
     id_matriz = search_matriz(id_institution)
 
     try:
-        produtos = Produtos.objects.filter(id_matriz=id_matriz, ativo=2)
+        produtos = Produtos.objects.filter(
+            id_matriz=id_matriz).order_by('descr').order_by('-ativo')
         produtos_serialized = ProdutoSerializer(produtos, many=True)
         return Response(produtos_serialized.data)
     except:
