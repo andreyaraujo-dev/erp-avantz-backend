@@ -10,4 +10,7 @@ urlpatterns = [
          name='create_subgroup_level2'),
     path('delete/<int:id>', views.delete, name='delete_group'),
     path('update/<int:id>', views.update, name='update_group'),
+    path('details/<int:id>', views.details, name='details_group'),
+    path('sections', views.get_sections, name='select_sections'),
+    path('groups', views.get_groups, name='get_distinct_groups'),
 ]

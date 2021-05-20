@@ -198,3 +198,84 @@ def update(request, id):
     except:
         raise exceptions.APIException(
             'Não foi possível atualizar o grupo, tente novamente.')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+def details(request, id):
+    id_institution = request.user.instit_id
+    id_matriz = search_matriz(id_institution)
+    # user_id = request.user.id
+
+    # if not verify_permission(40, user_id):
+    #     raise exceptions.PermissionDenied(
+    #         'Você não tem permissões para realizar esta operação.')
+
+    try:
+        group = ProdGrp.objects.filter(
+            instit=id_matriz, id=id).first()
+
+        group_serialized = GrupoProdutoSerializer(group)
+
+        return Response(group_serialized.data)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível retornar os dados do grupo, tente novamente.')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+def get_sections(request):
+    id_institution = request.user.instit_id
+    id_matriz = search_matriz(id_institution)
+
+    try:
+        sections = []
+        groups = ProdGrp.objects.filter(instit=id_matriz).order_by(
+            'nv1').values('id', 'nv1').distinct()
+
+        i = 0
+        for g in groups:
+            if len(sections) == 0:
+                sections.append(dict(id=g['id'], nv1=g['nv1']))
+
+            while sections[i]['nv1'] != g['nv1']:
+                sections.append(dict(id=g['id'], nv1=g['nv1']))
+                i += 1
+
+        return Response(sections)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível retornar os dados de seções de produto.')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+def get_groups(request):
+    id_institution = request.user.instit_id
+    id_matriz = search_matriz(id_institution)
+
+    try:
+        groups = []
+        data = ProdGrp.objects.filter(instit=id_matriz).order_by(
+            'nv1').values('id', 'nv2').distinct()
+
+        i = 0
+        for g in data:
+            if len(groups) == 0:
+                groups.append(dict(id=g['id'], nv2=g['nv2']))
+
+            while groups[i]['nv2'] != g['nv2']:
+                groups.append(dict(id=g['id'], nv2=g['nv2']))
+                i += 1
+
+        return Response(groups)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível retornar os dados dos grupos do produto.')
