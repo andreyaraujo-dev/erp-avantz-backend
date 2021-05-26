@@ -192,9 +192,10 @@ def create(request):
         )
 
         product.save()
-    except:
-        raise exceptions.APIException(
-            'Não foi possível cadastrar o produto, tente novamente.')
+    except Exception:
+        raise Exception
+        # raise exceptions.APIException(
+        #     'Não foi possível cadastrar o produto, tente novamente.')
 
     try:
         product_item = ProdItens(
@@ -234,9 +235,10 @@ def create(request):
         )
 
         product_item.save()
-    except:
-        raise exceptions.APIException(
-            'Não foi possível cadastrar os itens do produto, tente novamente.')
+    except Exception:
+        raise Exception
+        # raise exceptions.APIException(
+        #     'Não foi possível cadastrar os itens do produto, tente novamente.')
 
     return Response({'detail': 'Cadastro feito com sucesso.', 'product_id': product.id})
 
