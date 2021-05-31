@@ -1,7 +1,9 @@
+from django.conf import settings
+import jwt
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import update_session_auth_hash
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt, csrf_protect
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -85,6 +87,7 @@ def login(request):
         'user': {
             'id': serialized_user['id'],
             'first_name': serialized_user['first_name'],
+            'instit_id': serialized_user['instit_id'],
         },
         'institution': instituicao.nome
     }
