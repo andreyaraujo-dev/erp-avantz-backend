@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     # 'cloudinary',
     'django_rest_passwordreset',
     'storages',
-    'clear_cache',
+    # 'clear_cache',
     # django apps
     'django.contrib.admin',
     'django.contrib.auth',
