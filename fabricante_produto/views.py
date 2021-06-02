@@ -19,6 +19,11 @@ from users.utils import verify_permission
 def get_all(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
+    id_user = request.user.id
+
+    if not verify_permission(139, id_user):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         fabricantes = Fabpro.objects.filter(instit=id_matriz)
@@ -37,11 +42,11 @@ def get_all(request):
 def create(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # id_user = request.user.id
+    id_user = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(111, id_user):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         fabricante = Fabpro(
@@ -70,11 +75,11 @@ def create(request):
 def delete(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # id_user = request.user.id
+    id_user = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(140, id_user):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         fabricante = Fabpro.objects.filter(instit=id_matriz, id=id)
@@ -97,11 +102,11 @@ def delete(request, id):
 def update(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # id_user = request.user.id
+    id_user = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(141, id_user):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         fabricante = Fabpro.objects.filter(instit=id_matriz, id=id).first()

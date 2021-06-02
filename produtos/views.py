@@ -25,6 +25,11 @@ from produtos_itens.models import ProdItens
 def get_all(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
+    user_id = request.user.id
+
+    if not verify_permission(110, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         produtos = Produtos.objects.filter(
@@ -70,7 +75,7 @@ def details(request, id):
     id_matriz = search_matriz(id_institution)
     user_id = request.user.id
 
-    if not verify_permission(110, user_id):
+    if not verify_permission(152, user_id):
         raise exceptions.PermissionDenied(
             'Você não tem permissões para realizar esta operação.')
 
@@ -91,11 +96,11 @@ def details(request, id):
 def deactivate(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(143, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     product = Produtos.objects.filter(id=id, id_matriz=id_matriz).first()
     product_item = ProdItens.objects.filter(
@@ -111,7 +116,10 @@ def deactivate(request, id):
         product_item.ativo = 1
         product_item.save()
 
-        return Response({'detail': 'O registro do produto foi desativado com sucesso.'})
+        produtos = Produtos.objects.filter(
+            id_matriz=id_matriz).order_by('descr').order_by('-ativo')
+        produtos_serialized = ProdutoSerializer(produtos, many=True)
+        return Response(produtos_serialized.data)
     except:
         raise exceptions.APIException(
             'Não foi possível realizar a operação, tente novamente.')
@@ -125,11 +133,11 @@ def deactivate(request, id):
 def activate(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(144, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     product = Produtos.objects.filter(id=id, id_matriz=id_matriz).first()
     product_item = ProdItens.objects.filter(
@@ -162,9 +170,9 @@ def create(request):
     product_code = generate_product_code(id_matriz)
     user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(5, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         product = Produtos(
@@ -253,9 +261,9 @@ def update(request, id):
     id_matriz = search_matriz(id_institution)
     user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(144, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         product = Produtos.objects.get(id=id, id_matriz=id_matriz)
@@ -325,3 +333,38 @@ def update(request, id):
             'Não foi possível cadastrar os itens do produto, tente novamente.')
 
     return Response({'detail': 'Registro atualizado com sucesso.'})
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+@csrf_exempt
+@transaction.atomic
+def delete(request, id):
+    id_institution = request.user.instit_id
+    id_matriz = search_matriz(id_institution)
+    user_id = request.user.id
+
+    if not verify_permission(142, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
+
+    product = Produtos.objects.filter(id=id, id_matriz=id_matriz).first()
+    if not product:
+        raise exceptions.NotFound('Registro não encontrado, tente novamente.')
+
+    product_item = ProdItens.objects.filter(
+        id_produtos=product.id, id_matriz=id_matriz).first()
+
+    try:
+        product.delete()
+
+        product_item.delete()
+
+        produtos = Produtos.objects.filter(
+            id_matriz=id_matriz).order_by('descr').order_by('-ativo')
+        produtos_serialized = ProdutoSerializer(produtos, many=True)
+        return Response(produtos_serialized.data)
+    except:
+        raise exceptions.APIException(
+            'Não foi possível realizar a operação, tente novamente.')

@@ -20,6 +20,11 @@ from users.utils import verify_permission
 def get_all(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
+    user_id = request.user.id
+
+    if not verify_permission(148, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         unidades = Unidades.objects.filter(ativo=1, instit=id_matriz)
@@ -38,11 +43,11 @@ def get_all(request):
 def create(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(151, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         unit = Unidades(
@@ -71,11 +76,11 @@ def create(request):
 def update(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(150, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     unit = Unidades.objects.filter(ativo=1, id=id, instit=id_matriz).first()
     if not unit:
@@ -104,11 +109,11 @@ def update(request, id):
 def delete(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(110, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(149, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     unit = Unidades.objects.filter(ativo=1, id=id, instit=id_matriz).first()
     if not unit:

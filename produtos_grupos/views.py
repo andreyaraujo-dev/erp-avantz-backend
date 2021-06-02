@@ -19,11 +19,11 @@ from .serializers import GrupoProdutoSerializer
 def get_all(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(145, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         groups = ProdGrp.objects.filter(instit=id_matriz)
@@ -42,11 +42,11 @@ def get_all(request):
 def create_group(request):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(8, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         group = ProdGrp(
@@ -74,11 +74,11 @@ def create_group(request):
 def create_subgroup_level1(request, id_group):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(8, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         group = ProdGrp.objects.filter(instit=id_matriz, id=id_group).first()
@@ -109,11 +109,11 @@ def create_subgroup_level1(request, id_group):
 def create_subgroup_level2(request, id_subgroup):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(8, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         subgroup = ProdGrp.objects.filter(
@@ -147,11 +147,11 @@ def create_subgroup_level2(request, id_subgroup):
 def delete(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(146, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         group = ProdGrp.objects.filter(
@@ -175,11 +175,11 @@ def delete(request, id):
 def update(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(147, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         group = ProdGrp.objects.filter(
@@ -207,11 +207,11 @@ def update(request, id):
 def details(request, id):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
-    # user_id = request.user.id
+    user_id = request.user.id
 
-    # if not verify_permission(40, user_id):
-    #     raise exceptions.PermissionDenied(
-    #         'Você não tem permissões para realizar esta operação.')
+    if not verify_permission(145, user_id):
+        raise exceptions.PermissionDenied(
+            'Você não tem permissões para realizar esta operação.')
 
     try:
         group = ProdGrp.objects.filter(
