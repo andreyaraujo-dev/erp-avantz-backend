@@ -7,6 +7,7 @@ from rest_framework import status
 from datetime import datetime
 from django.utils import timezone
 from django.db import transaction
+from django.db.models import Q
 
 from users.authentication import SafeJWTAuthentication
 from .models import Produtos
@@ -45,14 +46,17 @@ def get_all(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 @csrf_exempt
-def find_products_by_name(request, name):
+def find_products(request, condition):
     id_institution = request.user.instit_id
     id_matriz = search_matriz(id_institution)
     estoque = []
 
     try:
         produtos = Produtos.objects.filter(
-            id_matriz=id_matriz, descres__contains=name)
+            Q(id_matriz=id_matriz, descres__contains=condition) |
+            Q(id_matriz=id_matriz, descr__contains=condition) |
+            Q(id_matriz=id_matriz, codprod__contains=condition)
+        )
         produtos_serialized = ProdutoSerializer(produtos, many=True)
 
         for produto in produtos_serialized.data:
