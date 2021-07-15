@@ -44,6 +44,7 @@ from produtos_itens import urls as produtos_itens_urls
 from produtos_grupos import urls as produtos_grupos_urls
 from fotos_produtos import urls as fotos_produtos_urls
 from aliquota_produto import urls as aliquota_produto_urls
+from funcionarios import urls as funcionarios_urls
 
 # from permissions.viewset import RotinasViewSet
 # from users_groups.viewset import UserGroupsViewSet
@@ -86,6 +87,7 @@ urlpatterns = [
     path('institution/', include(institution_urls)),
     path('photos/', include(fotos_produtos_urls)),
     path('aliquot/', include(aliquota_produto_urls)),
+    path('employees/', include(funcionarios_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # urlpatterns += router.urls
